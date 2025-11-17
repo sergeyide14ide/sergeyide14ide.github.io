@@ -2,7 +2,7 @@
     'use strict';
 
     // Добавляем CSS стили для адаптивных логотипов
-    var logoStyles = "\n        <style>\n        .logo-plugin-img {\n            display: block;\n            margin-top: 0.3em;\n            width: auto;\n            height: auto;\n            object-fit: contain;\n            object-position: left center;\n        }\n        \n        /* Размеры логотипов - фиксированная высота независимо от качества */\n        .logo-plugin-size-small .logo-plugin-img {\n            height: 80px;\n            max-width: 100%;\n        }\n        \n        .logo-plugin-size-medium .logo-plugin-img {\n            height: 125px;\n            max-width: 100%;\n        }\n        \n        .logo-plugin-size-large .logo-plugin-img {\n            height: 180px;\n            max-width: 100%;\n        }\n        \n        .logo-plugin-size-xlarge .logo-plugin-img {\n            height: 250px;\n            max-width: 100%;\n        }\n        \n        /* Адаптивность для разных устройств */\n        @media (max-width: 767px) {\n            .logo-plugin-img {\n                height: 60px !important;\n                max-width: 100%;\n            }\n        }\n        \n        @media (min-width: 768px) and (max-width: 1279px) {\n            .logo-plugin-size-small .logo-plugin-img {\n                height: 100px;\n            }\n            .logo-plugin-size-medium .logo-plugin-img {\n                height: 150px;\n            }\n            .logo-plugin-size-large .logo-plugin-img {\n                height: 220px;\n            }\n            .logo-plugin-size-xlarge .logo-plugin-img {\n                height: 300px;\n            }\n        }\n        \n        @media (min-width: 1920px) {\n            .logo-plugin-size-small .logo-plugin-img {\n                height: 120px;\n            }\n            .logo-plugin-size-medium .logo-plugin-img {\n                height: 180px;\n            }\n            .logo-plugin-size-large .logo-plugin-img {\n                height: 260px;\n            }\n            .logo-plugin-size-xlarge .logo-plugin-img {\n                height: 350px;\n            }\n        }\n        \n        @media (min-width: 3840px) {\n            .logo-plugin-size-small .logo-plugin-img {\n                height: 160px;\n            }\n            .logo-plugin-size-medium .logo-plugin-img {\n                height: 240px;\n            }\n            .logo-plugin-size-large .logo-plugin-img {\n                height: 340px;\n            }\n            .logo-plugin-size-xlarge .logo-plugin-img {\n                height: 480px;\n            }\n        }\n        </style>\n    ";
+    var logoStyles = "\n        <style>\n        .logo-plugin-img {\n            display: block;\n            margin-top: 0.3em;\n            width: auto;\n            height: auto;\n            object-fit: contain;\n            object-position: left center;\n        }\n        \n        /* Для оригинального качества - не применяем фиксированные высоты */\n        .logo-plugin-quality-original .logo-plugin-img {\n            height: auto !important;\n            max-width: 100%;\n        }\n        \n        /* Размеры логотипов - фиксированная высота независимо от качества */\n        .logo-plugin-size-small .logo-plugin-img {\n            height: 80px;\n            max-width: 100%;\n        }\n        \n        .logo-plugin-size-medium .logo-plugin-img {\n            height: 125px;\n            max-width: 100%;\n        }\n        \n        .logo-plugin-size-large .logo-plugin-img {\n            height: 180px;\n            max-width: 100%;\n        }\n        \n        .logo-plugin-size-xlarge .logo-plugin-img {\n            height: 250px;\n            max-width: 100%;\n        }\n        \n        /* Адаптивность для разных устройств */\n        @media (max-width: 767px) {\n            .logo-plugin-img {\n                height: 60px !important;\n                max-width: 100%;\n            }\n            .logo-plugin-quality-original .logo-plugin-img {\n                height: auto !important;\n            }\n        }\n        \n        @media (min-width: 768px) and (max-width: 1279px) {\n            .logo-plugin-size-small .logo-plugin-img {\n                height: 100px;\n            }\n            .logo-plugin-size-medium .logo-plugin-img {\n                height: 150px;\n            }\n            .logo-plugin-size-large .logo-plugin-img {\n                height: 220px;\n            }\n            .logo-plugin-size-xlarge .logo-plugin-img {\n                height: 300px;\n            }\n            .logo-plugin-quality-original .logo-plugin-img {\n                height: auto !important;\n            }\n        }\n        \n        @media (min-width: 1920px) {\n            .logo-plugin-size-small .logo-plugin-img {\n                height: 120px;\n            }\n            .logo-plugin-size-medium .logo-plugin-img {\n                height: 180px;\n            }\n            .logo-plugin-size-large .logo-plugin-img {\n                height: 260px;\n            }\n            .logo-plugin-size-xlarge .logo-plugin-img {\n                height: 350px;\n            }\n            .logo-plugin-quality-original .logo-plugin-img {\n                height: auto !important;\n            }\n        }\n        \n        @media (min-width: 3840px) {\n            .logo-plugin-size-small .logo-plugin-img {\n                height: 160px;\n            }\n            .logo-plugin-size-medium .logo-plugin-img {\n                height: 240px;\n            }\n            .logo-plugin-size-large .logo-plugin-img {\n                height: 340px;\n            }\n            .logo-plugin-size-xlarge .logo-plugin-img {\n                height: 480px;\n            }\n            .logo-plugin-quality-original .logo-plugin-img {\n                height: auto !important;\n            }\n        }\n        </style>\n    ";
     
     if (typeof Lampa !== 'undefined' && Lampa.Template) {
         Lampa.Template.add('logo_plugin_styles', logoStyles);
@@ -73,8 +73,15 @@
         if (titleContainer.length > 0) {
             // Удаляем старые классы размера
             titleContainer.removeClass('logo-plugin-size-small logo-plugin-size-medium logo-plugin-size-large logo-plugin-size-xlarge');
-            // Добавляем новый класс размера
-            titleContainer.addClass(sizeClass);
+            
+            // Если качество оригинал, добавляем специальный класс
+            if (quality === 'original') {
+                titleContainer.addClass('logo-plugin-quality-original');
+            } else {
+                titleContainer.removeClass('logo-plugin-quality-original');
+                // Добавляем класс размера только если не оригинал
+                titleContainer.addClass(sizeClass);
+            }
             
             // Обновляем изображение (добавляем timestamp для принудительной перезагрузки при изменении качества)
             var img = titleContainer.find('.logo-plugin-img');
@@ -82,6 +89,30 @@
                 img.attr('src', imageUrl + '?t=' + Date.now());
             } else {
                 titleContainer.html('<img class="logo-plugin-img" src="' + imageUrl + '" alt=""/>');
+                img = titleContainer.find('.logo-plugin-img');
+            }
+            
+            // Если качество оригинал, ограничиваем высоту оригинальным размером изображения
+            if (quality === 'original' && img.length > 0) {
+                var tempImg = new Image();
+                tempImg.onload = function() {
+                    var naturalHeight = this.naturalHeight;
+                    if (naturalHeight > 0) {
+                        img.css({
+                            'max-height': naturalHeight + 'px',
+                            'height': 'auto'
+                        });
+                    }
+                };
+                tempImg.onerror = function() {
+                    // Если не удалось загрузить, используем стандартные размеры
+                    titleContainer.removeClass('logo-plugin-quality-original');
+                    titleContainer.addClass(sizeClass);
+                };
+                tempImg.src = imageUrl;
+            } else {
+                // Убираем ограничение max-height для неоригинального качества
+                img.css('max-height', '');
             }
             
             // Обрабатываем год
@@ -94,7 +125,7 @@
         if (Lampa.Storage.get('logo_glav') == '1') {
             // Если логотипы отключены, удаляем их
             $('.full-start-new__title, .new-interface-info__title').find('.logo-plugin-img').remove();
-            $('.full-start-new__title, .new-interface-info__title').removeClass('logo-plugin-size-small logo-plugin-size-medium logo-plugin-size-large logo-plugin-size-xlarge');
+            $('.full-start-new__title, .new-interface-info__title').removeClass('logo-plugin-size-small logo-plugin-size-medium logo-plugin-size-large logo-plugin-size-xlarge logo-plugin-quality-original');
             return;
         }
         
@@ -120,11 +151,42 @@
                         
                         // Удаляем старые классы размера
                         titleContainer.removeClass('logo-plugin-size-small logo-plugin-size-medium logo-plugin-size-large logo-plugin-size-xlarge');
-                        // Добавляем новый класс размера
-                        titleContainer.addClass('logo-plugin-size-' + size);
+                        
+                        // Если качество оригинал, добавляем специальный класс
+                        if (quality === 'original') {
+                            titleContainer.removeClass('logo-plugin-quality-original');
+                            titleContainer.addClass('logo-plugin-quality-original');
+                        } else {
+                            titleContainer.removeClass('logo-plugin-quality-original');
+                            // Добавляем класс размера только если не оригинал
+                            titleContainer.addClass('logo-plugin-size-' + size);
+                        }
                         
                         // Обновляем изображение
                         img.attr('src', imageUrl + '?t=' + Date.now());
+                        
+                        // Если качество оригинал, ограничиваем высоту оригинальным размером изображения
+                        if (quality === 'original') {
+                            var tempImg = new Image();
+                            tempImg.onload = function() {
+                                var naturalHeight = this.naturalHeight;
+                                if (naturalHeight > 0) {
+                                    img.css({
+                                        'max-height': naturalHeight + 'px',
+                                        'height': 'auto'
+                                    });
+                                }
+                            };
+                            tempImg.onerror = function() {
+                                // Если не удалось загрузить, используем стандартные размеры
+                                titleContainer.removeClass('logo-plugin-quality-original');
+                                titleContainer.addClass('logo-plugin-size-' + size);
+                            };
+                            tempImg.src = imageUrl;
+                        } else {
+                            // Убираем ограничение max-height для неоригинального качества
+                            img.css('max-height', '');
+                        }
                     }
                 }
             }
