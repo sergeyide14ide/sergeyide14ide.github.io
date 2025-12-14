@@ -42,10 +42,6 @@
             position: relative;
         }
 
-        .cardify__details {
-            display: flex;
-        }
-
         .cardify .full-start-new__reactions {
             margin: 0;
             margin-right: -2.8em;
@@ -107,33 +103,34 @@
             display: block;
         }
 
-        .appletv-info__logo.visible ~ .full-start-new__head {
+        /* Скрыть заголовок если есть логотип */
+        .appletv-info__logo.visible ~ .full-start-new__head,
+        .appletv-info__logo.visible ~ .full-start-new__title {
             display: none !important;
         }
 
-        .appletv-info__company-logo {
-            width: 60px;
-            height: 60px;
+        /* Логотип стриминга */
+        .appletv-info__streaming-logo {
+            height: 40px;
+            width: auto;
             object-fit: contain;
-            border-radius: 50%;
             margin-bottom: 0.8em;
-            background: rgba(255,255,255,0.05);
-            padding: 8px;
             display: none;
         }
 
-        .appletv-info__company-logo.visible {
+        .appletv-info__streaming-logo.visible {
             display: block;
         }
 
+        /* Метаданные */
         .appletv-info__meta {
             display: flex;
             align-items: center;
             gap: 0.6em;
             flex-wrap: wrap;
-            font-size: 0.95em;
-            color: rgba(255,255,255,0.75);
-            margin-bottom: 0.5em;
+            font-size: 1.14em;
+            color: rgba(255,255,255,1);
+            margin-bottom: 0.8em;
             margin-top: 0.8em;
         }
 
@@ -149,18 +146,39 @@
             line-height: 1;
         }
 
+        /* Описание */
         .appletv-info__description {
             font-size: 0.9em;
             line-height: 1.5;
             color: rgba(255,255,255,0.65);
             margin-top: 0.8em;
             margin-bottom: 0.8em;
+            max-width: 33%;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
+        /* Год и продолжительность */
         .appletv-info__year-runtime {
             font-size: 0.9em;
             color: rgba(255,255,255,0.6);
             margin-bottom: 1em;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1280px) {
+            .appletv-info__description {
+                max-width: 50%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .appletv-info__description {
+                max-width: 100%;
+            }
         }
     `;
 
@@ -177,7 +195,7 @@
                 
                 <div class="cardify__left">
                     <img class="appletv-info__logo" alt="" />
-                    <img class="appletv-info__company-logo" alt="" />
+                    <img class="appletv-info__streaming-logo" alt="" />
                     
                     <div class="full-start-new__head"></div>
                     <div class="full-start-new__title">{title}</div>
@@ -185,10 +203,6 @@
                     <div class="appletv-info__meta"></div>
                     <div class="appletv-info__description">{descr}</div>
                     <div class="appletv-info__year-runtime"></div>
-
-                    <div class="cardify__details">
-                        <div class="full-start-new__details"></div>
-                    </div>
 
                     <div class="full-start-new__buttons">
                         <div class="full-start__button selector button--play">
@@ -323,13 +337,27 @@
     /**
      * Извлечение возрастного рейтинга
      */
-    function extractAgeRating(movieData) {
-        if (movieData.age_rating) return movieData.age_rating;
-        if (movieData.content_ratings && movieData.content_ratings.results) {
-            const rating = movieData.content_ratings.results.find(r => r.iso_3166_1 === 'US');
-            if (rating && rating.rating) return rating.rating;
+    function extractAgeRating(render) {
+        // Пытаемся найти в full-start__pg
+        const pgElement = render.find('.full-start__pg');
+        if (pgElement.length && !pgElement.hasClass('hide')) {
+            const pgText = pgElement.text().trim();
+            // Извлекаем число из текста типа "18+" или "PG-13"
+            const match = pgText.match(/(\d+)/);
+            if (match) {
+                return match[1] + '+';
+            }
         }
         return null;
+    }
+
+    /**
+     * Определение типа медиа
+     */
+    function getMediaType(movieData) {
+        if (movieData.name) return 'Сериал';
+        if (movieData.title) return 'Фильм';
+        return 'Медиа';
     }
 
     /**
@@ -351,31 +379,26 @@
             });
         }
 
-        // Логотип компании
-        if (movieData.production_companies && movieData.production_companies.length > 0) {
-            const company = movieData.production_companies[0];
-            if (company.logo_path) {
-                const companyLogoUrl = Lampa.TMDB.image(`/t/p/w200${company.logo_path}`);
-                const companyLogo = render.find('.appletv-info__company-logo');
-                if (companyLogo.length) {
-                    companyLogo.attr('src', companyLogoUrl).attr('alt', company.name).addClass('visible');
-                }
-            }
-        }
+        // Логотип стриминга (вместо компании)
+        // Пока оставляем пустым, можно добавить позже логику определения стриминга
 
-        // Метаданные (жанры, рейтинг)
+        // Метаданные: Тип · Жанр · Поджанр
         const metaContainer = render.find('.appletv-info__meta');
         if (metaContainer.length) {
             const metaParts = [];
 
-            // Жанры
+            // Тип медиа
+            const mediaType = getMediaType(movieData);
+            metaParts.push(mediaType);
+
+            // Жанры (максимум 2)
             if (movieData.genres && movieData.genres.length > 0) {
-                const genres = movieData.genres.slice(0, 3).map(g => g.name).join(' · ');
-                metaParts.push(genres);
+                const genres = movieData.genres.slice(0, 2).map(g => g.name);
+                metaParts.push(...genres);
             }
 
             // Возрастной рейтинг
-            const ageRating = extractAgeRating(movieData);
+            const ageRating = extractAgeRating(render);
             if (ageRating) {
                 metaParts.push(`<span class="appletv-info__age-rating">${ageRating}</span>`);
             }
@@ -420,8 +443,10 @@
                 // Улучшаем фон
                 enhanceBackground(e.object.activity);
                 
-                // Заполняем кастомную информацию
-                populateCustomInfo(e.object.activity, e.data.movie);
+                // Небольшая задержка чтобы full-start__pg успел заполниться
+                setTimeout(function() {
+                    populateCustomInfo(e.object.activity, e.data.movie);
+                }, 100);
             }
         });
     }
