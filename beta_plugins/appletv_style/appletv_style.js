@@ -4,16 +4,16 @@
     /**
      * Apple TV+ Style Plugin для Lampa
      * 
-     * Стратегия:
-     * 1. Переопределяет шаблон full_start_new аналогично cardify
-     * 2. Инжектирует CSS синхронно в head
-     * 3. Изменяет только структуру информационного блока
-     * 4. Оставляет UI/UX как в cardify
+     * Архитектура:
+     * - Переопределяет шаблон full_start_new (как cardify)
+     * - Улучшает фон до original качества
+     * - Добавляет кастомную информацию о фильме
+     * - Интегрируется с существующей системой
      */
 
     // ==================== CSS СТИЛИ ====================
     const CSS_STYLES = `
-        /* Базовая структура как в cardify */
+        /* Базовые стили cardify */
         .cardify {
             transition: all 0.3s;
         }
@@ -80,7 +80,20 @@
             margin-right: 0 !important;
         }
 
-        /* Кастомные стили для Apple TV+ блока */
+        /* Фон как в cardify */
+        .cardify__background.loaded:not(.dim) {
+            opacity: 1;
+        }
+
+        .cardify__background.nodisplay {
+            opacity: 0 !important;
+        }
+
+        body:not(.menu--open) .cardify__background {
+            mask-image: linear-gradient(to bottom, white 50%, rgba(255,255,255,0) 100%);
+        }
+
+        /* Кастомные элементы Apple TV+ */
         .appletv-info__logo {
             max-height: 180px;
             max-width: 100%;
@@ -92,6 +105,10 @@
 
         .appletv-info__logo.visible {
             display: block;
+        }
+
+        .appletv-info__logo.visible ~ .full-start-new__head {
+            display: none !important;
         }
 
         .appletv-info__company-logo {
@@ -144,11 +161,6 @@
             font-size: 0.9em;
             color: rgba(255,255,255,0.6);
             margin-bottom: 1em;
-        }
-
-        /* Скрываем оригинальный head если есть логотип */
-        .appletv-info__logo.visible ~ .full-start-new__head {
-            display: none !important;
         }
     `;
 
@@ -253,7 +265,7 @@
     // ==================== УТИЛИТЫ ====================
 
     /**
-     * Инъекция CSS в head
+     * Инъекция CSS
      */
     function injectCSS() {
         if (!document.getElementById('appletv-style-css')) {
@@ -265,7 +277,21 @@
     }
 
     /**
-     * Форматирование времени из минут
+     * Улучшение фона (original качество)
+     */
+    function enhanceBackground(activity) {
+        const backgroundElement = activity.render().find('.full-start__background');
+        const currentSrc = backgroundElement.attr('src');
+        
+        if (currentSrc && !backgroundElement.hasClass('cardify__background')) {
+            backgroundElement
+                .addClass('cardify__background')
+                .attr('src', currentSrc.replace('w1280', 'original'));
+        }
+    }
+
+    /**
+     * Форматирование времени
      */
     function formatRuntime(minutes) {
         if (!minutes || minutes === 0) return '';
@@ -275,7 +301,7 @@
     }
 
     /**
-     * Получение логотипа фильма через TMDB API
+     * Получение логотипа фильма
      */
     function fetchMovieLogo(movieId, type, callback) {
         if (!movieId) return;
@@ -290,7 +316,7 @@
                 callback(logoUrl);
             }
         }).fail(function() {
-            // Ошибки игнорируются
+            // Игнорируем ошибки
         });
     }
 
@@ -298,7 +324,6 @@
      * Извлечение возрастного рейтинга
      */
     function extractAgeRating(movieData) {
-        // Пытаемся найти возрастной рейтинг из разных источников
         if (movieData.age_rating) return movieData.age_rating;
         if (movieData.content_ratings && movieData.content_ratings.results) {
             const rating = movieData.content_ratings.results.find(r => r.iso_3166_1 === 'US');
@@ -308,9 +333,9 @@
     }
 
     /**
-     * Обогащение layout данными
+     * Заполнение кастомной информации
      */
-    function enhanceLayout(activity, movieData) {
+    function populateCustomInfo(activity, movieData) {
         if (!activity || !activity.render || !movieData) return;
 
         const render = activity.render();
@@ -338,7 +363,7 @@
             }
         }
 
-        // Метаданные (жанры, возрастной рейтинг)
+        // Метаданные (жанры, рейтинг)
         const metaContainer = render.find('.appletv-info__meta');
         if (metaContainer.length) {
             const metaParts = [];
@@ -381,7 +406,7 @@
     // ==================== ИНИЦИАЛИЗАЦИЯ ====================
 
     function init() {
-        // Инъекция CSS синхронно
+        // Инъекция CSS
         injectCSS();
 
         // Переопределение шаблона
@@ -389,10 +414,14 @@
             Lampa.Template.add('full_start_new', TEMPLATE_HTML);
         }
 
-        // Обогащение данными после загрузки
+        // Обработка событий full
         Lampa.Listener.follow('full', function(e) {
             if (e.type === 'complite' && e.data && e.data.movie && e.object && e.object.activity) {
-                enhanceLayout(e.object.activity, e.data.movie);
+                // Улучшаем фон
+                enhanceBackground(e.object.activity);
+                
+                // Заполняем кастомную информацию
+                populateCustomInfo(e.object.activity, e.data.movie);
             }
         });
     }
@@ -410,4 +439,3 @@
     }
 
 })();
-
