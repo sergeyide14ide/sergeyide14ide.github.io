@@ -158,9 +158,7 @@
 }
 
 .cardify__meta span:not(:last-child)::after {
-    content: '●';
-    margin: 0 0.5em;
-    opacity: 0.6;
+    content: ' · ';
 }
 
 /* Описание */
@@ -185,9 +183,7 @@
 }
 
 .cardify__info span:not(:last-child)::after {
-    content: '●';
-    margin: 0 0.5em;
-    opacity: 0.6;
+    content: ' · ';
 }
 
 /* Левая и правая части */
@@ -245,6 +241,18 @@
 
 .full-start__background.loaded:not(.dim) {
     opacity: 1 !important;
+}
+
+.full-start__background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 30%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 body:not(.menu--open) .full-start__background {
@@ -330,19 +338,28 @@ body:not(.menu--open) .full-start__background {
 
         // Длительность
         if (data.name) {
-            // Сериал - средняя продолжительность эпизода
+            // Сериал - средняя продолжительность эпизода или количество сезонов
             if (data.episode_run_time && data.episode_run_time.length) {
                 const avgRuntime = data.episode_run_time[0];
-                infoParts.push(`${avgRuntime} мин`);
+                const timeM = Lampa.Lang.translate('time_m').replace('.', '');
+                infoParts.push(`${avgRuntime} ${timeM}`);
+            } else {
+                // Если нет длительности - показываем количество сезонов
+                const seasons = Lampa.Utils.countSeasons(data);
+                if (seasons) {
+                    infoParts.push(`${Lampa.Lang.translate('title_seasons')}: ${seasons}`);
+                }
             }
         } else {
             // Фильм - общая продолжительность
             if (data.runtime && data.runtime > 0) {
                 const hours = Math.floor(data.runtime / 60);
                 const minutes = data.runtime % 60;
+                const timeH = Lampa.Lang.translate('time_h').replace('.', '');
+                const timeM = Lampa.Lang.translate('time_m').replace('.', '');
                 const timeStr = hours > 0 
-                    ? `${hours} ч ${minutes} мин` 
-                    : `${minutes} мин`;
+                    ? `${hours} ${timeH} ${minutes} ${timeM}` 
+                    : `${minutes} ${timeM}`;
                 infoParts.push(timeStr);
             }
         }
