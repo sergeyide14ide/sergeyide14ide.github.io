@@ -180,20 +180,20 @@
 
 /* Фон */
 .cardify .full-start__background {
-    left: 0;
+    left: 0 !important;
 }
 
 .cardify .full-start__background.loaded:not(.dim) {
-    opacity: 1;
+    opacity: 1 !important;
 }
 
 .cardify.nodisplay {
-    transform: translate3d(0, 50%, 0);
-    opacity: 0;
+    transform: translate3d(0, 50%, 0) !important;
+    opacity: 0 !important;
 }
 
 body:not(.menu--open) .cardify .full-start__background {
-    mask-image: linear-gradient(to bottom, white 50%, rgba(255, 255, 255, 0) 100%);
+    mask-image: linear-gradient(to bottom, white 50%, rgba(255, 255, 255, 0) 100%) !important;
 }
 </style>`;
         
