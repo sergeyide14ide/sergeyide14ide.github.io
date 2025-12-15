@@ -314,6 +314,8 @@
     left: 0 !important;
     opacity: 0;
     transition: opacity 0.6s ease-out;
+    animation: none !important;
+    transform: none !important;
 }
 
 .full-start__background.loaded:not(.dim) {
