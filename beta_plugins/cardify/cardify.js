@@ -11,7 +11,6 @@
         patchApiImg();
         addCustomTemplate();
         addStyles();
-        attachEventListeners();
     }
 
     function addCustomTemplate() {
@@ -180,20 +179,12 @@
 }
 
 /* Фон */
-.cardify__background {
-    left: 0;
-}
-
-.cardify__background.loaded:not(.dim) {
-    opacity: 1;
-}
-
 .cardify.nodisplay {
     transform: translate3d(0, 50%, 0);
     opacity: 0;
 }
 
-body:not(.menu--open) .cardify__background {
+body:not(.menu--open) .cardify .full-start__background {
     mask-image: linear-gradient(to bottom, white 50%, rgba(255, 255, 255, 0) 100%);
 }
 </style>`;
@@ -224,15 +215,6 @@ body:not(.menu--open) .cardify__background {
         };
     }
 
-    function attachEventListeners() {
-        // Добавляем класс для стилей
-        Lampa.Listener.follow('full', (event) => {
-            if (event.type !== 'complite') return;
-            
-            const background = event.object.activity.render().find('.full-start__background');
-            background.addClass('cardify__background');
-        });
-    }
 
     // Запуск плагина
     if (window.appready) {
