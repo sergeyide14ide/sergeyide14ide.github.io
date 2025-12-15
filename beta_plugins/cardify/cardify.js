@@ -11,57 +11,7 @@
         patchApiImg();
         addCustomTemplate();
         addStyles();
-        attachSmoothBlur();
-    }
-
-    // Мгновенный blur фона при скролле через MutationObserver
-    function attachSmoothBlur() {
-        Lampa.Listener.follow('full', (event) => {
-            if (event.type !== 'complite') return;
-
-            const activity = event.object.activity;
-            const background = activity.render().find('.full-start__background')[0];
-            const scrollBody = activity.render().find('.scroll__body')[0];
-            
-            if (!scrollBody || !background) return;
-
-            const updateBlur = () => {
-                const transform = scrollBody.style.transform;
-                const match = transform.match(/translate3d\(0px,\s*(-?\d+(?:\.\d+)?)px/);
-                
-                if (match) {
-                    const translateY = Math.abs(parseFloat(match[1]));
-                    
-                    if (translateY > 0) {
-                        background.style.filter = 'blur(10px)';
-                        background.style.opacity = '0.8';
-                    } else {
-                        background.style.filter = 'blur(0)';
-                        background.style.opacity = '1';
-                    }
-                }
-            };
-
-            // MutationObserver для отслеживания изменений style
-            const observer = new MutationObserver(() => {
-                updateBlur();
-            });
-
-            observer.observe(scrollBody, {
-                attributes: true,
-                attributeFilter: ['style']
-            });
-
-            // Очистка при уничтожении активности
-            Lampa.Listener.follow('activity', (e) => {
-                if (e.type === 'destroy' && e.object.activity === activity) {
-                    observer.disconnect();
-                }
-            });
-
-            // Начальная проверка
-            updateBlur();
-        });
+        attachLogoLoader();
     }
 
     function addCustomTemplate() {
@@ -76,7 +26,8 @@
             <div class="full-start-new__right">
                 <div class="cardify__left">
                     <div class="full-start-new__head"></div>
-                    <div class="full-start-new__title">{title}</div>
+                    <div class="full-start-new__title" style="display: none;">{title}</div>
+                    <div class="cardify__logo"></div>
 
                     <div class="cardify__details">
                         <div class="full-start-new__details"></div>
@@ -177,6 +128,21 @@
     text-shadow: 0 0 .1em rgba(0, 0, 0, 0.3);
 }
 
+/* Логотип */
+.cardify__logo {
+    margin-top: 0.3em;
+}
+
+.cardify__logo img {
+    display: block;
+    max-width: 100%;
+    max-height: 180px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    object-position: left center;
+}
+
 /* Левая и правая части */
 .cardify__left {
     flex-grow: 1;
@@ -232,19 +198,10 @@
 /* Фон */
 .full-start__background {
     left: 0 !important;
-    transition: filter 0.2s ease, opacity 0.2s ease !important;
-    will-change: filter, opacity;
 }
 
 .full-start__background.loaded:not(.dim) {
     opacity: 1 !important;
-    filter: blur(0) !important;
-}
-
-/* Блюр фона при скролле вниз */
-.full-start__background.loaded.dim {
-    filter: blur(100px) !important;
-    opacity: 0.8 !important;
 }
 
 body:not(.menu--open) .full-start__background {
@@ -276,6 +233,58 @@ body:not(.menu--open) .full-start__background {
             }
             return originalImg.call(this, src, size);
         };
+    }
+
+    // Получаем качество логотипа на основе poster_size
+    function getLogoQuality() {
+        const posterSize = Lampa.Storage.field('poster_size');
+        const qualityMap = {
+            'w200': 'w300',      // Низкое постера → низкое лого
+            'w300': 'w500',      // Среднее постера → среднее лого
+            'w500': 'original'   // Высокое постера → оригинальное лого
+        };
+        return qualityMap[posterSize] || 'w500';
+    }
+
+    // Загружаем логотип фильма
+    function loadLogo(event) {
+        const data = event.data.movie;
+        const activity = event.object.activity;
+        
+        if (!data || !activity) return;
+
+        const mediaType = data.name ? 'tv' : 'movie';
+        const apiUrl = Lampa.TMDB.api(
+            `${mediaType}/${data.id}/images?api_key=${Lampa.TMDB.key()}&language=${Lampa.Storage.get('language')}`
+        );
+
+        $.get(apiUrl, (imagesData) => {
+            const logoContainer = activity.render().find('.cardify__logo');
+            const titleElement = activity.render().find('.full-start-new__title');
+
+            if (imagesData.logos && imagesData.logos[0]) {
+                const logoPath = imagesData.logos[0].file_path;
+                const quality = getLogoQuality();
+                const logoUrl = Lampa.TMDB.image(`/t/p/${quality}${logoPath}`);
+
+                logoContainer.html(`<img src="${logoUrl}" alt="" />`);
+            } else {
+                // Нет логотипа - показываем текстовое название
+                titleElement.show();
+            }
+        }).fail(() => {
+            // При ошибке показываем текстовое название
+            activity.render().find('.full-start-new__title').show();
+        });
+    }
+
+    // Подключаем загрузку логотипов
+    function attachLogoLoader() {
+        Lampa.Listener.follow('full', (event) => {
+            if (event.type === 'complite') {
+                loadLogo(event);
+            }
+        });
     }
 
 
