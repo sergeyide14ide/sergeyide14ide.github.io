@@ -567,6 +567,33 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         infoContainer.html(infoParts.join(' · '));
     }
 
+    // Ждём загрузки фона
+    function waitForBackground(activity, callback) {
+        const background = activity.render().find('.full-start__background');
+        let called = false;
+        
+        const safeCallback = () => {
+            if (!called) {
+                called = true;
+                callback();
+            }
+        };
+        
+        const checkBackground = () => {
+            if (background.hasClass('loaded')) {
+                safeCallback();
+            } else {
+                setTimeout(checkBackground, 50);
+            }
+        };
+        
+        // Начинаем проверку
+        checkBackground();
+        
+        // Таймаут на случай проблем (2 секунды)
+        setTimeout(safeCallback, 2000);
+    }
+
     // Загружаем логотип фильма
     function loadLogo(event) {
         const data = event.data.movie;
@@ -579,10 +606,12 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         fillDescription(activity, data);
         fillAdditionalInfo(activity, data);
 
-        // Запускаем анимации для строк (с небольшой задержкой после анимации фона)
-        setTimeout(() => activity.render().find('.cardify__meta').addClass('show'), 400);
-        setTimeout(() => activity.render().find('.cardify__description').addClass('show'), 400);
-        setTimeout(() => activity.render().find('.cardify__info').addClass('show'), 400);
+        // Ждём загрузки фона перед анимациями
+        waitForBackground(activity, () => {
+            setTimeout(() => activity.render().find('.cardify__meta').addClass('show'), 100);
+            setTimeout(() => activity.render().find('.cardify__description').addClass('show'), 100);
+            setTimeout(() => activity.render().find('.cardify__info').addClass('show'), 100);
+        });
 
         // Загружаем логотип
         const mediaType = data.name ? 'tv' : 'movie';
@@ -602,26 +631,65 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
                 const img = new Image();
                 img.onload = () => {
                     logoContainer.html(`<img src="${logoUrl}" alt="" />`);
-                    setTimeout(() => logoContainer.addClass('loaded'), 400);
+                    
+                    // Ждём фона перед показом логотипа
+                    waitForBackground(activity, () => {
+                        setTimeout(() => logoContainer.addClass('loaded'), 100);
+                    });
                 };
                 img.src = logoUrl;
             } else {
                 // Нет логотипа - показываем текстовое название
                 titleElement.show();
-                setTimeout(() => logoContainer.addClass('loaded'), 400);
+                
+                waitForBackground(activity, () => {
+                    setTimeout(() => logoContainer.addClass('loaded'), 100);
+                });
             }
         }).fail(() => {
             // При ошибке показываем текстовое название
             activity.render().find('.full-start-new__title').show();
-            setTimeout(() => activity.render().find('.cardify__logo').addClass('loaded'), 400);
+            
+            waitForBackground(activity, () => {
+                setTimeout(() => activity.render().find('.cardify__logo').addClass('loaded'), 100);
+            });
         });
     }
 
-    // Добавляем оверлей рядом с фоном
+    // Добавляем оверлей и контролируем загрузку фона
     function addOverlay(activity) {
         const background = activity.render().find('.full-start__background');
+        
         if (background.length && !background.next('.cardify__overlay').length) {
             background.after('<div class="full-start__background loaded cardify__overlay"></div>');
+        }
+
+        // Контролируем загрузку изображения фона
+        if (background.length) {
+            const img = background.get(0);
+            
+            if (img && img.tagName === 'IMG') {
+                // Убираем класс loaded перед проверкой
+                background.removeClass('loaded');
+                
+                const checkAndShow = () => {
+                    if (img.complete && img.naturalHeight !== 0) {
+                        // Изображение загружено
+                        setTimeout(() => background.addClass('loaded'), 10);
+                    } else {
+                        // Ждём загрузки
+                        img.onload = () => {
+                            setTimeout(() => background.addClass('loaded'), 10);
+                        };
+                        img.onerror = () => {
+                            setTimeout(() => background.addClass('loaded'), 10);
+                        };
+                    }
+                };
+                
+                // Небольшая задержка чтобы убедиться что src установлен
+                setTimeout(checkAndShow, 50);
+            }
         }
     }
 
