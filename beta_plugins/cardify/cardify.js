@@ -26,12 +26,12 @@
             <div class="full-start-new__right">
                 <div class="cardify__left">
                     <div class="cardify__logo"></div>
+                    <div class="full-start-new__title" style="display: none;">{title}</div>
                     <div class="cardify__meta"></div>
                     <div class="cardify__description"></div>
                     <div class="cardify__info"></div>
                     
-                    <!-- Скрытые оригинальные элементы -->
-                    <div class="full-start-new__title" style="display: none;">{title}</div>
+                    
                     <div class="full-start-new__head" style="display: none;"></div>
                     <div class="full-start-new__details" style="display: none;"></div>
 
@@ -157,10 +157,9 @@
     line-height: 1.4;
 }
 
-.cardify__meta span:not(:last-child)::after {
-    content: ' · ';
-    font-size: 1.3em;
-    vertical-align: middle;
+.cardify__meta .separator {
+    margin: 0 0.5em;
+    opacity: 0.6;
 }
 
 /* Описание */
@@ -184,10 +183,9 @@
     line-height: 1.4;
 }
 
-.cardify__info span:not(:last-child)::after {
-    content: ' · ';
-    font-size: 1.3em;
-    vertical-align: middle;
+.cardify__info .separator {
+    margin: 0 0.5em;
+    opacity: 0.6;
 }
 
 /* Левая и правая части */
@@ -296,14 +294,33 @@ body:not(.menu--open) .full-start__background {
         return qualityMap[posterSize] || 'w500';
     }
 
+    // Получаем локализованный тип медиа
+    function getMediaType(data) {
+        const lang = Lampa.Storage.get('language', 'ru');
+        const isTv = !!data.name;
+        
+        const types = {
+            ru: isTv ? 'Сериал' : 'Фильм',
+            en: isTv ? 'TV Series' : 'Movie',
+            uk: isTv ? 'Серіал' : 'Фільм',
+            be: isTv ? 'Серыял' : 'Фільм',
+            bg: isTv ? 'Сериал' : 'Филм',
+            cs: isTv ? 'Seriál' : 'Film',
+            he: isTv ? 'סדרה' : 'סרט',
+            pt: isTv ? 'Série' : 'Filme',
+            zh: isTv ? '电视剧' : '电影'
+        };
+        
+        return types[lang] || types['en'];
+    }
+
     // Заполняем мета информацию (Тип/Жанр/поджанр)
     function fillMetaInfo(activity, data) {
         const metaContainer = activity.render().find('.cardify__meta');
         const metaParts = [];
 
         // Тип контента
-        const mediaType = data.name ? 'Сериал' : 'Фильм';
-        metaParts.push(mediaType);
+        metaParts.push(getMediaType(data));
 
         // Жанры (первые 2-3)
         if (data.genres && data.genres.length) {
@@ -313,7 +330,12 @@ body:not(.menu--open) .full-start__background {
             metaParts.push(...genres);
         }
 
-        metaContainer.html(metaParts.map(part => `<span>${part}</span>`).join(''));
+        const html = metaParts.map((part, index) => {
+            const separator = index < metaParts.length - 1 ? '<span class="separator">·</span>' : '';
+            return `<span>${part}</span>${separator}`;
+        }).join('');
+        
+        metaContainer.html(html);
     }
 
     // Заполняем описание
@@ -321,6 +343,60 @@ body:not(.menu--open) .full-start__background {
         const descContainer = activity.render().find('.cardify__description');
         const description = data.overview || '';
         descContainer.text(description);
+    }
+
+    // Склонение сезонов с локализацией
+    function formatSeasons(count) {
+        const lang = Lampa.Storage.get('language', 'ru');
+        
+        // Славянские языки (ru, uk, be, bg) - сложное склонение
+        if (['ru', 'uk', 'be', 'bg'].includes(lang)) {
+            const cases = [2, 0, 1, 1, 1, 2];
+            const titles = {
+                ru: ['сезон', 'сезона', 'сезонов'],
+                uk: ['сезон', 'сезони', 'сезонів'],
+                be: ['сезон', 'сезоны', 'сезонаў'],
+                bg: ['сезон', 'сезона', 'сезона']
+            };
+            
+            const langTitles = titles[lang] || titles['ru'];
+            const caseIndex = (count % 100 > 4 && count % 100 < 20) ? 2 : cases[Math.min(count % 10, 5)];
+            
+            return `${count} ${langTitles[caseIndex]}`;
+        }
+        
+        // Английский
+        if (lang === 'en') {
+            return count === 1 ? `${count} Season` : `${count} Seasons`;
+        }
+        
+        // Чешский
+        if (lang === 'cs') {
+            if (count === 1) return `${count} série`;
+            if (count >= 2 && count <= 4) return `${count} série`;
+            return `${count} sérií`;
+        }
+        
+        // Португальский
+        if (lang === 'pt') {
+            return count === 1 ? `${count} Temporada` : `${count} Temporadas`;
+        }
+        
+        // Иврит
+        if (lang === 'he') {
+            if (count === 1) return `עונה ${count}`;
+            if (count === 2) return `${count} עונות`;
+            return `${count} עונות`;
+        }
+        
+        // Китайский (без склонения)
+        if (lang === 'zh') {
+            return `${count} 季`;
+        }
+        
+        // Остальные языки - базовое склонение
+        const seasonWord = Lampa.Lang.translate('full_season');
+        return count === 1 ? `${count} ${seasonWord}` : `${count} ${seasonWord}s`;
     }
 
     // Заполняем дополнительную информацию (Год/длительность)
@@ -346,7 +422,7 @@ body:not(.menu--open) .full-start__background {
                 // Если нет длительности - показываем количество сезонов
                 const seasons = Lampa.Utils.countSeasons(data);
                 if (seasons) {
-                    infoParts.push(`${Lampa.Lang.translate('title_seasons')}: ${seasons}`);
+                    infoParts.push(formatSeasons(seasons));
                 }
             }
         } else {
@@ -363,7 +439,12 @@ body:not(.menu--open) .full-start__background {
             }
         }
 
-        infoContainer.html(infoParts.map(part => `<span>${part}</span>`).join(''));
+        const html = infoParts.map((part, index) => {
+            const separator = index < infoParts.length - 1 ? '<span class="separator">·</span>' : '';
+            return `<span>${part}</span>${separator}`;
+        }).join('');
+        
+        infoContainer.html(html);
     }
 
     // Загружаем логотип фильма
