@@ -3,7 +3,7 @@
 
     // Главная функция плагина
     function initializePlugin() {
-        console.log('Cardify', 'v2.0 - Optimized animations and background loading');
+        console.log('Cardify', 'v2.0.1 - Optimized animations and background loading');
         
         if (!Lampa.Platform.screen('tv')) {
             console.log('Cardify', 'TV mode only');
@@ -318,9 +318,15 @@
     transition: opacity 0.6s ease-out !important;
     animation: none !important;
     transform: none !important;
+    will-change: opacity;
 }
 
 .full-start__background.loaded:not(.dim) {
+    opacity: 1 !important;
+}
+
+/* Удерживаем opacity при загрузке нового фона */
+.full-start__background.loaded.cardify-animated {
     opacity: 1 !important;
 }
 
@@ -617,7 +623,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
 
     // Ждем загрузки и появления фона
     function waitForBackgroundLoad(activity, callback) {
-        const background = activity.render().find('.full-start__background');
+        const background = activity.render().find('.full-start__background:not(.cardify__overlay)');
         
         if (!background.length) {
             callback();
@@ -632,10 +638,11 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
 
         // Если фон загружен но анимация еще идет
         if (background.hasClass('loaded')) {
-            background.one('transitionend', () => {
+            // Ждем завершения transition + небольшая задержка для надежности
+            setTimeout(() => {
                 background.addClass('cardify-animated');
                 callback();
-            });
+            }, 650); // 600ms transition + 50ms запас
             return;
         }
 
@@ -643,10 +650,11 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         const checkInterval = setInterval(() => {
             if (background.hasClass('loaded')) {
                 clearInterval(checkInterval);
-                background.one('transitionend', () => {
+                // Ждем завершения transition + небольшая задержка
+                setTimeout(() => {
                     background.addClass('cardify-animated');
                     callback();
-                });
+                }, 650); // 600ms transition + 50ms запас
             }
         }, 50);
 
