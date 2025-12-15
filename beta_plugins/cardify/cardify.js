@@ -181,17 +181,19 @@
 /* Фон */
 .full-start__background {
     left: 0 !important;
-    transition: filter 0.3s ease;
+    transition: filter 0.2s ease, opacity 0.2s ease !important;
+    will-change: filter, opacity;
 }
 
 .full-start__background.loaded:not(.dim) {
     opacity: 1 !important;
+    filter: blur(0) !important;
 }
 
 /* Блюр фона при скролле вниз */
 .full-start__background.loaded.dim {
-    filter: blur(10px) !important;
-    opacity: 1 !important;
+    filter: blur(100px) !important;
+    opacity: 0.8 !important;
 }
 
 body:not(.menu--open) .full-start__background {
