@@ -28,7 +28,13 @@
                     <div class="cardify__logo"></div>
                     <div class="full-start-new__title" style="display: none;">{title}</div>
                     
-                    <div class="cardify__meta"></div>
+                    <div class="cardify__meta">
+                        <div class="cardify__meta-left">
+                            <span class="cardify__network"></span>
+                            <span class="cardify__meta-text"></span>
+                        </div>
+                        <div class="full-start__pg hide"></div>
+                    </div>
                     <div class="cardify__description"></div>
                     <div class="cardify__info"></div>
                     
@@ -84,7 +90,6 @@
                     </div>
 
                     <div class="full-start-new__rate-line">
-                        <div class="full-start__pg hide"></div>
                         <div class="full-start__status hide"></div>
                     </div>
                 </div>
@@ -152,10 +157,42 @@
 
 /* Мета информация (Тип/Жанр/поджанр) */
 .cardify__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     color: #fff;
     font-size: 1.1em;
     margin-bottom: 0.5em;
     line-height: 1.4;
+}
+
+.cardify__meta-left {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+}
+
+.cardify__network {
+    display: inline-flex;
+    align-items: center;
+}
+
+.cardify__network img {
+    max-height: 1.4em;
+    width: auto;
+    object-fit: contain;
+}
+
+.cardify__meta .full-start__pg {
+    margin: 0;
+    padding: 0.15em 0.5em;
+    font-size: 0.9em;
+    font-weight: 600;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    border-radius: 0.3em;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.2;
 }
 
 /* Описание */
@@ -306,9 +343,37 @@ body:not(.menu--open) .full-start__background {
         return types[lang] || types['en'];
     }
 
+    // Загружаем иконку студии/сети
+    function loadNetworkIcon(activity, data) {
+        const networkContainer = activity.render().find('.cardify__network');
+        
+        // Для сериалов - телесеть
+        if (data.networks && data.networks.length) {
+            const network = data.networks[0];
+            if (network.logo_path) {
+                const logoUrl = Lampa.Api.img(network.logo_path, 'w200');
+                networkContainer.html(`<img src="${logoUrl}" alt="${network.name}">`);
+                return;
+            }
+        }
+        
+        // Для фильмов - студия
+        if (data.production_companies && data.production_companies.length) {
+            const company = data.production_companies[0];
+            if (company.logo_path) {
+                const logoUrl = Lampa.Api.img(company.logo_path, 'w200');
+                networkContainer.html(`<img src="${logoUrl}" alt="${company.name}">`);
+                return;
+            }
+        }
+        
+        // Если нет иконки - скрываем контейнер
+        networkContainer.remove();
+    }
+
     // Заполняем мета информацию (Тип/Жанр/поджанр)
     function fillMetaInfo(activity, data) {
-        const metaContainer = activity.render().find('.cardify__meta');
+        const metaTextContainer = activity.render().find('.cardify__meta-text');
         const metaParts = [];
 
         // Тип контента
@@ -322,7 +387,10 @@ body:not(.menu--open) .full-start__background {
             metaParts.push(...genres);
         }
 
-        metaContainer.html(metaParts.join(' · '));
+        metaTextContainer.html(metaParts.join(' · '));
+        
+        // Загружаем иконку студии/сети
+        loadNetworkIcon(activity, data);
     }
 
     // Заполняем описание
