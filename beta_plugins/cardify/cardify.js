@@ -309,20 +309,16 @@
 }
 
 /* Фон */
-.full-start__background {
+.cardify__background {
     height: calc(100% + 6em);
     left: 0 !important;
-    opacity: 0;
-    transition: opacity 0.6s ease-out;
-    animation: none !important;
-    transform: none !important;
 }
 
-.full-start__background.loaded:not(.dim) {
+.cardify__background.loaded:not(.dim) {
     opacity: 1 !important;
 }
 
-body:not(.menu--open) .full-start__background {
+body:not(.menu--open) .cardify__background {
     mask-image: none;
 }
 
@@ -639,11 +635,17 @@ body:not(.menu--open) .full-start__background {
         });
     }
 
-    // Добавляем оверлей рядом с фоном
+    // Добавляем класс к фону и оверлей
     function addOverlay(activity) {
         const background = activity.render().find('.full-start__background');
-        if (background.length && !background.next('.cardify__overlay').length) {
-            background.after('<div class="full-start__background loaded cardify__overlay"></div>');
+        if (background.length) {
+            // Добавляем класс к фону для правильной анимации
+            background.addClass('cardify__background');
+            
+            // Добавляем оверлей
+            if (!background.next('.cardify__overlay').length) {
+                background.after('<div class="full-start__background loaded cardify__overlay"></div>');
+            }
         }
     }
 
