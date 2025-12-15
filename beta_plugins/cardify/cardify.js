@@ -159,6 +159,8 @@
 
 .cardify__meta span:not(:last-child)::after {
     content: ' · ';
+    font-size: 1.3em;
+    vertical-align: middle;
 }
 
 /* Описание */
@@ -167,7 +169,7 @@
     font-size: 0.95em;
     line-height: 1.5;
     margin-bottom: 1.2em;
-    max-width: 33.33%;
+    max-width: 35vw;
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
@@ -184,6 +186,8 @@
 
 .cardify__info span:not(:last-child)::after {
     content: ' · ';
+    font-size: 1.3em;
+    vertical-align: middle;
 }
 
 /* Левая и правая части */
@@ -238,7 +242,7 @@
 .cardify__overlay {
     height: 100vh;
     width: 44vw;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.35) 25%, rgba(0, 0, 0, 0.18) 45%, rgba(0, 0, 0, 0.08) 55%, rgba(0, 0, 0, 0.03) 60%, rgba(0, 0, 0, 0) 65%);
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.792) 0%, rgba(0, 0, 0, 0.504) 25%, rgba(0, 0, 0, 0.264) 45%, rgba(0, 0, 0, 0.12) 55%, rgba(0, 0, 0, 0.043) 60%, rgba(0, 0, 0, 0) 65%);
 }
 
 /* Фон */
