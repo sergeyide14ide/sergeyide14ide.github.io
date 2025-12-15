@@ -142,7 +142,7 @@
 
 .cardify__logo img {
     display: block;
-    max-width: 100%;
+    max-width: 35vw;
     max-height: 180px;
     width: auto;
     height: auto;
@@ -228,15 +228,9 @@
     margin-right: 0 !important;
 }
 
-/* Оверлей для затемнения левого края */
-.cardify__overlay {
-    height: 100vh;
-    width: 44vw;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.792) 0%, rgba(0, 0, 0, 0.504) 25%, rgba(0, 0, 0, 0.264) 45%, rgba(0, 0, 0, 0.12) 55%, rgba(0, 0, 0, 0.043) 60%, rgba(0, 0, 0, 0) 65%);
-}
-
 /* Фон */
 .full-start__background {
+    height: calc(100% + 6em);
     left: 0 !important;
 }
 
@@ -245,7 +239,13 @@
 }
 
 body:not(.menu--open) .full-start__background {
-    mask-image: linear-gradient(to bottom, white 50%, rgba(255, 255, 255, 0) 100%) !important;
+    mask-image: none;
+}
+
+/* Оверлей для затемнения левого края */
+.cardify__overlay {
+    width: 90vw;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.792) 0%, rgba(0, 0, 0, 0.504) 25%, rgba(0, 0, 0, 0.264) 45%, rgba(0, 0, 0, 0.12) 55%, rgba(0, 0, 0, 0.043) 60%, rgba(0, 0, 0, 0) 65%);
 }
 </style>`;
         
