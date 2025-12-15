@@ -412,7 +412,6 @@ body:not(.menu--open) .full-start__background {
     function attachLogoLoader() {
         Lampa.Listener.follow('full', (event) => {
             if (event.type === 'complite') {
-                addOverlay(event.object.activity);
                 loadLogo(event);
             }
         });
