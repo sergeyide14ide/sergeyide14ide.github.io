@@ -243,14 +243,13 @@
     opacity: 1 !important;
 }
 
-.full-start__background::before {
-    content: '';
+.cardify__bg-overlay {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 30%, transparent 70%);
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
     pointer-events: none;
     z-index: 1;
 }
@@ -405,10 +404,20 @@ body:not(.menu--open) .full-start__background {
         });
     }
 
+    // Добавляем оверлей на фон
+    function addBackgroundOverlay(activity) {
+        const background = activity.render().find('.full-start__background');
+        
+        if (background.length && !background.next('.cardify__bg-overlay').length) {
+            background.after('<div class="cardify__bg-overlay"></div>');
+        }
+    }
+
     // Подключаем загрузку логотипов
     function attachLogoLoader() {
         Lampa.Listener.follow('full', (event) => {
             if (event.type === 'complite') {
+                addBackgroundOverlay(event.object.activity);
                 loadLogo(event);
             }
         });
