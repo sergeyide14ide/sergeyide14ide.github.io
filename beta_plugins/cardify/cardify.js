@@ -244,64 +244,6 @@
     opacity: 1 !important;
 }
 
-/* Градиентная маска для фона */
-body:not(.menu--open) .cardify .full-start__background {
-    mask-image: linear-gradient(to bottom, white 50%, rgba(255, 255, 255, 0) 100%);
-    -webkit-mask-image: linear-gradient(to bottom, white 50%, rgba(255, 255, 255, 0) 100%);
-}
-
-/* Анимация скрытия */
-.cardify.nodisplay {
-    transform: translate3d(0, 50%, 0);
-    opacity: 0;
-}
-
-/* Keyframes для появления фона */
-@keyframes animation-full-background {
-    0% {
-        transform: translate3d(0, -10%, 0);
-    }
-    100% {
-        transform: translate3d(0, 0, 0);
-    }
-}
-
-@-webkit-keyframes animation-full-background {
-    0% {
-        -webkit-transform: translate3d(0, -10%, 0);
-        transform: translate3d(0, -10%, 0);
-    }
-    100% {
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-    }
-}
-
-/* Keyframes для скрытия контента */
-@keyframes animation-full-start-hide {
-    0% {
-        transform: translate3d(0, 0, 0);
-        opacity: 1;
-    }
-    100% {
-        transform: translate3d(0, 50%, 0);
-        opacity: 0;
-    }
-}
-
-@-webkit-keyframes animation-full-start-hide {
-    0% {
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-        opacity: 1;
-    }
-    100% {
-        -webkit-transform: translate3d(0, 50%, 0);
-        transform: translate3d(0, 50%, 0);
-        opacity: 0;
-    }
-}
-
 body:not(.menu--open) .full-start__background {
     mask-image: linear-gradient(to bottom, white 50%, rgba(255, 255, 255, 0) 100%) !important;
 }
