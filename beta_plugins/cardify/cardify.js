@@ -162,19 +162,16 @@
     color: #fff;
     font-size: 1.1em;
     margin-bottom: 0.5em;
-    line-height: 1;
 }
 
 .cardify__meta-left {
     display: flex;
     align-items: center;
-    line-height: 1;
 }
 
 .cardify__network {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    line-height: 1;
 }
 
 .cardify__network img {
@@ -186,21 +183,23 @@
 }
 
 .cardify__meta-text {
+    display: flex;
+    align-items: center;
     margin-left: 1em;
-    line-height: 1;
 }
 
 .cardify__meta .full-start__pg {
-    margin: 0 0 0 0.6em;
-    padding: 0.2em 0.5em;
-    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.6em;
+    padding: 0.3em 0.5em;
+    font-size: 0.6em;
     font-weight: 600;
     border: 1.5px solid rgba(255, 255, 255, 0.4);
     border-radius: 0.3em;
     background: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.9);
-    line-height: 1;
-    vertical-align: middle;
 }
 
 /* Описание */
