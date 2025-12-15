@@ -309,20 +309,20 @@
 }
 
 /* Фон */
-.cardify .full-start__background {
+.full-start__background {
     height: calc(100% + 6em);
     left: 0 !important;
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
+    animation: none !important;
+    transform: none !important;
 }
 
-.cardify .full-start__background.loaded {
+.full-start__background.loaded:not(.dim) {
     opacity: 1 !important;
 }
 
-.cardify .full-start__background.loaded:not(.dim) {
-    opacity: 1 !important;
-}
-
-body:not(.menu--open) .cardify .full-start__background {
+body:not(.menu--open) .full-start__background {
     mask-image: none;
 }
 
@@ -330,33 +330,18 @@ body:not(.menu--open) .cardify .full-start__background {
 @keyframes animation-full-background {
     0% {
         opacity: 0;
-        transform: none;
     }
     100% {
         opacity: 1;
-        transform: none;
-    }
-}
-
-@-webkit-keyframes animation-full-background {
-    0% {
-        opacity: 0;
-        -webkit-transform: none;
-        transform: none;
-    }
-    100% {
-        opacity: 1;
-        -webkit-transform: none;
-        transform: none;
     }
 }
 
 /* Увеличиваем длительность анимации фона */
-body.advanced--animation:not(.no--animation) .cardify .full-start__background.loaded {
-    -webkit-animation: animation-full-background 0.8s forwards !important;
-    -moz-animation: animation-full-background 0.8s forwards !important;
-    -o-animation: animation-full-background 0.8s forwards !important;
-    animation: animation-full-background 0.8s forwards !important;
+body.advanced--animation:not(.no--animation) .full-start__background.loaded {
+    -webkit-animation: animation-full-background 0.8s;
+    -moz-animation: animation-full-background 0.8s;
+    -o-animation: animation-full-background 0.8s;
+    animation: animation-full-background 0.8s;
 }
 
 /* Скрываем rate-line */
@@ -582,7 +567,6 @@ body.advanced--animation:not(.no--animation) .cardify .full-start__background.lo
         infoContainer.html(infoParts.join(' · '));
     }
 
-    // Ждём загрузки фона
     // Загружаем логотип фильма
     function loadLogo(event) {
         const data = event.data.movie;
@@ -595,12 +579,10 @@ body.advanced--animation:not(.no--animation) .cardify .full-start__background.lo
         fillDescription(activity, data);
         fillAdditionalInfo(activity, data);
 
-        // Запускаем анимации после анимации фона (800ms)
-        setTimeout(() => {
-            activity.render().find('.cardify__meta').addClass('show');
-            activity.render().find('.cardify__description').addClass('show');
-            activity.render().find('.cardify__info').addClass('show');
-        }, 900);
+        // Запускаем анимации для строк (с небольшой задержкой после анимации фона)
+        setTimeout(() => activity.render().find('.cardify__meta').addClass('show'), 400);
+        setTimeout(() => activity.render().find('.cardify__description').addClass('show'), 400);
+        setTimeout(() => activity.render().find('.cardify__info').addClass('show'), 400);
 
         // Загружаем логотип
         const mediaType = data.name ? 'tv' : 'movie';
@@ -620,25 +602,24 @@ body.advanced--animation:not(.no--animation) .cardify .full-start__background.lo
                 const img = new Image();
                 img.onload = () => {
                     logoContainer.html(`<img src="${logoUrl}" alt="" />`);
-                    setTimeout(() => logoContainer.addClass('loaded'), 900);
+                    setTimeout(() => logoContainer.addClass('loaded'), 400);
                 };
                 img.src = logoUrl;
             } else {
                 // Нет логотипа - показываем текстовое название
                 titleElement.show();
-                setTimeout(() => logoContainer.addClass('loaded'), 900);
+                setTimeout(() => logoContainer.addClass('loaded'), 400);
             }
         }).fail(() => {
             // При ошибке показываем текстовое название
             activity.render().find('.full-start-new__title').show();
-            setTimeout(() => activity.render().find('.cardify__logo').addClass('loaded'), 900);
+            setTimeout(() => activity.render().find('.cardify__logo').addClass('loaded'), 400);
         });
     }
 
-    // Добавляем оверлей
+    // Добавляем оверлей рядом с фоном
     function addOverlay(activity) {
         const background = activity.render().find('.full-start__background');
-        
         if (background.length && !background.next('.cardify__overlay').length) {
             background.after('<div class="full-start__background loaded cardify__overlay"></div>');
         }
