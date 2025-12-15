@@ -16,6 +16,7 @@
 
     function addCustomTemplate() {
         const template = `<div class="full-start-new cardify">
+        <div class="cardify__overlay"></div>
         <div class="full-start-new__body">
             <div class="full-start-new__left hide">
                 <div class="full-start-new__poster">
@@ -115,10 +116,24 @@
 /* Основной контейнер */
 .cardify {
     transition: all .3s;
+    position: relative;
+}
+
+.cardify__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .cardify .full-start-new__body {
     height: 80vh;
+    position: relative;
+    z-index: 2;
 }
 
 .cardify .full-start-new__right {
@@ -241,18 +256,6 @@
 
 .full-start__background.loaded:not(.dim) {
     opacity: 1 !important;
-}
-
-.full-start__background::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 30%, transparent 70%);
-    pointer-events: none;
-    z-index: 1;
 }
 
 body:not(.menu--open) .full-start__background {
