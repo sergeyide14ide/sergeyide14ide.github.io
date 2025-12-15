@@ -213,13 +213,9 @@ body:not(.menu--open) .cardify__background {
                 
                 // Маппинг poster_size на backdrop размеры
                 const sizeMap = {
-                    'w92': 'w780',
-                    'w154': 'w780',
-                    'w185': 'w780',
-                    'w342': 'w1280',
-                    'w500': 'w1280',
-                    'w780': 'w1280',
-                    'original': 'original'
+                    'w200': 'w780',      // Низкое → минимальный backdrop
+                    'w300': 'w1280',     // Среднее → стандартный backdrop
+                    'w500': 'original'   // Высокое → оригинальный backdrop
                 };
                 
                 size = sizeMap[posterSize] || 'w1280';
