@@ -3,7 +3,7 @@
 
     // Главная функция плагина
     function initializePlugin() {
-        console.log('Cardify', 'v2.0.1 - Optimized animations and background loading');
+        console.log('Cardify', 'v2.0.2 - Optimized animations and background loading');
         
         if (!Lampa.Platform.screen('tv')) {
             console.log('Cardify', 'TV mode only');
@@ -315,14 +315,18 @@
     height: calc(100% + 6em);
     left: 0 !important;
     opacity: 0 !important;
-    transition: opacity 0.6s ease-out !important;
+    transition: opacity 0.6s ease-out, filter 0.3s ease-out !important;
     animation: none !important;
     transform: none !important;
-    will-change: opacity;
+    will-change: opacity, filter;
 }
 
 .full-start__background.loaded:not(.dim) {
     opacity: 1 !important;
+}
+
+.full-start__background.dim {
+  filter: blur(30px);
 }
 
 /* Удерживаем opacity при загрузке нового фона */
