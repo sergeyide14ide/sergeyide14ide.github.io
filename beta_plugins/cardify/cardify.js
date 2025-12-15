@@ -181,9 +181,16 @@
 /* Фон */
 .full-start__background {
     left: 0 !important;
+    transition: filter 0.3s ease;
 }
 
 .full-start__background.loaded:not(.dim) {
+    opacity: 1 !important;
+}
+
+/* Блюр фона при скролле вниз */
+.full-start__background.loaded.dim {
+    filter: blur(10px) !important;
     opacity: 1 !important;
 }
 
