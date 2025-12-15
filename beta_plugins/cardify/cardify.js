@@ -143,6 +143,14 @@
 /* Логотип */
 .cardify__logo {
     margin-bottom: 0.5em;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.cardify__logo.loaded {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .cardify__logo img {
@@ -162,16 +170,28 @@
     color: #fff;
     font-size: 1.1em;
     margin-bottom: 0.5em;
+    line-height: 1;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    transition-delay: 0.1s;
+}
+
+.cardify__meta.show {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .cardify__meta-left {
     display: flex;
     align-items: center;
+    line-height: 1;
 }
 
 .cardify__network {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    line-height: 1;
 }
 
 .cardify__network img {
@@ -183,23 +203,21 @@
 }
 
 .cardify__meta-text {
-    display: flex;
-    align-items: center;
     margin-left: 1em;
+    line-height: 1;
 }
 
 .cardify__meta .full-start__pg {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 0.6em;
-    padding: 0.3em 0.5em;
-    font-size: 0.6em;
+    margin: 0 0 0 0.6em;
+    padding: 0.2em 0.5em;
+    font-size: 0.85em;
     font-weight: 600;
     border: 1.5px solid rgba(255, 255, 255, 0.4);
     border-radius: 0.3em;
     background: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.9);
+    line-height: 1;
+    vertical-align: middle;
 }
 
 /* Описание */
@@ -214,6 +232,15 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    transition-delay: 0.2s;
+}
+
+.cardify__description.show {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* Дополнительная информация (Год/длительность) */
@@ -222,6 +249,15 @@
     font-size: 1em;
     line-height: 1.4;
     margin-bottom: 0.5em;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    transition-delay: 0.3s;
+}
+
+.cardify__info.show {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* Левая и правая части */
@@ -276,6 +312,8 @@
 .full-start__background {
     height: calc(100% + 6em);
     left: 0 !important;
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
 }
 
 .full-start__background.loaded:not(.dim) {
@@ -284,6 +322,11 @@
 
 body:not(.menu--open) .full-start__background {
     mask-image: none;
+}
+
+/* Скрываем rate-line */
+.cardify .full-start-new__rate-line {
+    display: none;
 }
 
 /* Оверлей для затемнения левого края */
@@ -475,17 +518,17 @@ body:not(.menu--open) .full-start__background {
 
         // Длительность
         if (data.name) {
-            // Сериал - средняя продолжительность эпизода или количество сезонов
+            // Сериал - показываем и продолжительность эпизода, и количество сезонов
             if (data.episode_run_time && data.episode_run_time.length) {
                 const avgRuntime = data.episode_run_time[0];
                 const timeM = Lampa.Lang.translate('time_m').replace('.', '');
                 infoParts.push(`${avgRuntime} ${timeM}`);
-            } else {
-                // Если нет длительности - показываем количество сезонов
-                const seasons = Lampa.Utils.countSeasons(data);
-                if (seasons) {
-                    infoParts.push(formatSeasons(seasons));
-                }
+            }
+            
+            // Всегда показываем количество сезонов для сериалов
+            const seasons = Lampa.Utils.countSeasons(data);
+            if (seasons) {
+                infoParts.push(formatSeasons(seasons));
             }
         } else {
             // Фильм - общая продолжительность
@@ -516,6 +559,11 @@ body:not(.menu--open) .full-start__background {
         fillDescription(activity, data);
         fillAdditionalInfo(activity, data);
 
+        // Запускаем анимации для строк
+        setTimeout(() => activity.render().find('.cardify__meta').addClass('show'), 50);
+        setTimeout(() => activity.render().find('.cardify__description').addClass('show'), 50);
+        setTimeout(() => activity.render().find('.cardify__info').addClass('show'), 50);
+
         // Загружаем логотип
         const mediaType = data.name ? 'tv' : 'movie';
         const apiUrl = Lampa.TMDB.api(
@@ -531,14 +579,21 @@ body:not(.menu--open) .full-start__background {
                 const quality = getLogoQuality();
                 const logoUrl = Lampa.TMDB.image(`/t/p/${quality}${logoPath}`);
 
-                logoContainer.html(`<img src="${logoUrl}" alt="" />`);
+                const img = new Image();
+                img.onload = () => {
+                    logoContainer.html(`<img src="${logoUrl}" alt="" />`);
+                    setTimeout(() => logoContainer.addClass('loaded'), 10);
+                };
+                img.src = logoUrl;
             } else {
                 // Нет логотипа - показываем текстовое название
                 titleElement.show();
+                logoContainer.addClass('loaded');
             }
         }).fail(() => {
             // При ошибке показываем текстовое название
             activity.render().find('.full-start-new__title').show();
+            activity.render().find('.cardify__logo').addClass('loaded');
         });
     }
 
