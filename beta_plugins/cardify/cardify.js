@@ -314,6 +314,10 @@
     left: 0 !important;
 }
 
+.cardify .full-start__background.loaded {
+    opacity: 1 !important;
+}
+
 body:not(.menu--open) .full-start__background {
     mask-image: none;
 }
@@ -658,15 +662,17 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
             background.after('<div class="full-start__background loaded cardify__overlay"></div>');
         }
 
-        // Контролируем загрузку изображения фона через свой класс
-        if (background.length && !background.hasClass('cardify-ready')) {
+        // Сбрасываем класс для новой карточки
+        if (background.length) {
+            background.removeClass('cardify-ready');
+            
             const img = background.get(0);
             
             if (img && img.tagName === 'IMG') {
                 const checkAndShow = () => {
                     if (img.complete && img.naturalHeight !== 0) {
                         // Изображение уже загружено
-                        background.addClass('cardify-ready');
+                        setTimeout(() => background.addClass('cardify-ready'), 10);
                     } else {
                         // Ждём загрузки
                         img.onload = () => {
