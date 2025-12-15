@@ -32,8 +32,8 @@
                         <div class="cardify__meta-left">
                             <span class="cardify__network"></span>
                             <span class="cardify__meta-text"></span>
+                            <div class="full-start__pg hide"></div>
                         </div>
-                        <div class="full-start__pg hide"></div>
                     </div>
                     <div class="cardify__description"></div>
                     <div class="cardify__info"></div>
@@ -159,40 +159,48 @@
 .cardify__meta {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     color: #fff;
     font-size: 1.1em;
     margin-bottom: 0.5em;
-    line-height: 1.4;
+    line-height: 1;
 }
 
 .cardify__meta-left {
     display: flex;
     align-items: center;
-    gap: 0.8em;
+    line-height: 1;
 }
 
 .cardify__network {
     display: inline-flex;
     align-items: center;
+    line-height: 1;
 }
 
 .cardify__network img {
-    max-height: 1.4em;
+    display: block;
+    max-height: 0.8em;
     width: auto;
     object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.cardify__meta-text {
+    margin-left: 1em;
+    line-height: 1;
 }
 
 .cardify__meta .full-start__pg {
-    margin: 0;
-    padding: 0.15em 0.5em;
-    font-size: 0.9em;
+    margin: 0 0 0 0.6em;
+    padding: 0.2em 0.5em;
+    font-size: 0.85em;
     font-weight: 600;
     border: 1.5px solid rgba(255, 255, 255, 0.4);
     border-radius: 0.3em;
     background: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.9);
-    line-height: 1.2;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 /* Описание */
