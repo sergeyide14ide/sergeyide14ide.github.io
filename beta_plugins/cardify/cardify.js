@@ -312,6 +312,14 @@
 .full-start__background {
     height: calc(100% + 6em);
     left: 0 !important;
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
+    animation: none !important;
+    transform: none !important;
+}
+
+.full-start__background.loaded:not(.dim) {
+    opacity: 1 !important;
 }
 
 body:not(.menu--open) .full-start__background {
