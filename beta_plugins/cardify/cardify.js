@@ -3,6 +3,8 @@
 
     // Главная функция плагина
     function initializePlugin() {
+        console.log('Cardify', 'v2.0 - Optimized animations and background loading');
+        
         if (!Lampa.Platform.screen('tv')) {
             console.log('Cardify', 'TV mode only');
             return;
