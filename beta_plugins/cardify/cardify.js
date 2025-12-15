@@ -179,6 +179,14 @@
 }
 
 /* Фон */
+.cardify .full-start__background {
+    left: 0;
+}
+
+.cardify .full-start__background.loaded:not(.dim) {
+    opacity: 1;
+}
+
 .cardify.nodisplay {
     transform: translate3d(0, 50%, 0);
     opacity: 0;
