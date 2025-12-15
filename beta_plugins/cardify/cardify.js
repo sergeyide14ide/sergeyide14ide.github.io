@@ -11,6 +11,42 @@
         patchApiImg();
         addCustomTemplate();
         addStyles();
+        attachSmoothBlur();
+    }
+
+    // Плавный blur фона при скролле в реальном времени
+    function attachSmoothBlur() {
+        Lampa.Listener.follow('full', (event) => {
+            if (event.type !== 'complite') return;
+
+            const activity = event.object.activity;
+            const background = activity.render().find('.full-start__background')[0];
+            const scrollContainer = activity.render().find('.scroll')[0];
+            
+            if (!scrollContainer || !background) return;
+
+            let rafId = null;
+
+            const updateBlur = () => {
+                const position = scrollContainer.scrollTop;
+                
+                if (position > 0) {
+                    background.style.filter = 'blur(10px)';
+                    background.style.opacity = '0.8';
+                } else {
+                    background.style.filter = 'blur(0)';
+                    background.style.opacity = '1';
+                }
+                
+                rafId = null;
+            };
+
+            scrollContainer.addEventListener('scroll', () => {
+                if (!rafId) {
+                    rafId = requestAnimationFrame(updateBlur);
+                }
+            });
+        });
     }
 
     function addCustomTemplate() {
