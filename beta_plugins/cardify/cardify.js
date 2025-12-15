@@ -580,7 +580,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         };
         
         const checkBackground = () => {
-            if (background.hasClass('loaded')) {
+            if (background.hasClass('cardify-ready')) {
                 safeCallback();
             } else {
                 setTimeout(checkBackground, 50);
@@ -664,31 +664,30 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
             background.after('<div class="full-start__background loaded cardify__overlay"></div>');
         }
 
-        // Контролируем загрузку изображения фона
-        if (background.length) {
+        // Контролируем загрузку изображения фона через свой класс
+        if (background.length && !background.hasClass('cardify-ready')) {
             const img = background.get(0);
             
             if (img && img.tagName === 'IMG') {
-                // Убираем класс loaded перед проверкой
-                background.removeClass('loaded');
-                
                 const checkAndShow = () => {
                     if (img.complete && img.naturalHeight !== 0) {
-                        // Изображение загружено
-                        setTimeout(() => background.addClass('loaded'), 10);
+                        // Изображение уже загружено
+                        background.addClass('cardify-ready');
                     } else {
                         // Ждём загрузки
                         img.onload = () => {
-                            setTimeout(() => background.addClass('loaded'), 10);
+                            background.addClass('cardify-ready');
                         };
                         img.onerror = () => {
-                            setTimeout(() => background.addClass('loaded'), 10);
+                            background.addClass('cardify-ready');
                         };
                     }
                 };
                 
                 // Небольшая задержка чтобы убедиться что src установлен
                 setTimeout(checkAndShow, 50);
+            } else {
+                background.addClass('cardify-ready');
             }
         }
     }
