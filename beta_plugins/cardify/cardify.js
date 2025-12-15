@@ -27,11 +27,12 @@
                 <div class="cardify__left">
                     <div class="cardify__logo"></div>
                     <div class="full-start-new__title" style="display: none;">{title}</div>
+                    
                     <div class="cardify__meta"></div>
                     <div class="cardify__description"></div>
                     <div class="cardify__info"></div>
                     
-                    
+                    <!-- Скрытые оригинальные элементы -->
                     <div class="full-start-new__head" style="display: none;"></div>
                     <div class="full-start-new__details" style="display: none;"></div>
 
@@ -130,13 +131,13 @@
     font-size: 2.5em;
     font-weight: 700;
     line-height: 1.2;
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;
     text-shadow: 0 0 .1em rgba(0, 0, 0, 0.3);
 }
 
 /* Логотип */
 .cardify__logo {
-    margin-bottom: 1.5em;
+    margin-bottom: 0.5em;
 }
 
 .cardify__logo img {
@@ -153,13 +154,8 @@
 .cardify__meta {
     color: #fff;
     font-size: 1.1em;
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;
     line-height: 1.4;
-}
-
-.cardify__meta .separator {
-    margin: 0 0.5em;
-    opacity: 0.6;
 }
 
 /* Описание */
@@ -167,7 +163,7 @@
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.95em;
     line-height: 1.5;
-    margin-bottom: 1.2em;
+    margin-bottom: 0.5em;
     max-width: 35vw;
     display: -webkit-box;
     -webkit-line-clamp: 4;
@@ -181,11 +177,7 @@
     color: rgba(255, 255, 255, 0.75);
     font-size: 1em;
     line-height: 1.4;
-}
-
-.cardify__info .separator {
-    margin: 0 0.5em;
-    opacity: 0.6;
+    margin-bottom: 0.5em;
 }
 
 /* Левая и правая части */
@@ -330,12 +322,7 @@ body:not(.menu--open) .full-start__background {
             metaParts.push(...genres);
         }
 
-        const html = metaParts.map((part, index) => {
-            const separator = index < metaParts.length - 1 ? '<span class="separator">·</span>' : '';
-            return `<span>${part}</span>${separator}`;
-        }).join('');
-        
-        metaContainer.html(html);
+        metaContainer.html(metaParts.join(' · '));
     }
 
     // Заполняем описание
@@ -439,12 +426,7 @@ body:not(.menu--open) .full-start__background {
             }
         }
 
-        const html = infoParts.map((part, index) => {
-            const separator = index < infoParts.length - 1 ? '<span class="separator">·</span>' : '';
-            return `<span>${part}</span>${separator}`;
-        }).join('');
-        
-        infoContainer.html(html);
+        infoContainer.html(infoParts.join(' · '));
     }
 
     // Загружаем логотип фильма
