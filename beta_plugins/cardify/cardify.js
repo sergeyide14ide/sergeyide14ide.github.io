@@ -16,6 +16,7 @@
 
     function addCustomTemplate() {
         const template = `<div class="full-start-new cardify">
+        <div class="cardify__overlay"></div>
         <div class="full-start-new__body">
             <div class="full-start-new__left hide">
                 <div class="full-start-new__poster">
@@ -234,6 +235,18 @@
     margin-right: 0 !important;
 }
 
+/* Оверлей для затемнения левого края */
+.cardify__overlay {
+    height: 100vh;
+    position: absolute;
+    left: 0;
+    width: 33vw;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.55) 33%, rgba(0, 0, 0, 0) 60%);
+    top: -6em;
+    pointer-events: none;
+    z-index: 1;
+}
+
 /* Фон */
 .full-start__background {
     left: 0 !important;
@@ -241,17 +254,6 @@
 
 .full-start__background.loaded:not(.dim) {
     opacity: 1 !important;
-}
-
-.cardify__bg-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 1;
 }
 
 body:not(.menu--open) .full-start__background {
@@ -404,20 +406,10 @@ body:not(.menu--open) .full-start__background {
         });
     }
 
-    // Добавляем оверлей на фон
-    function addBackgroundOverlay(activity) {
-        const background = activity.render().find('.full-start__background');
-        
-        if (background.length && !background.next('.cardify__bg-overlay').length) {
-            background.after('<div class="cardify__bg-overlay"></div>');
-        }
-    }
-
     // Подключаем загрузку логотипов
     function attachLogoLoader() {
         Lampa.Listener.follow('full', (event) => {
             if (event.type === 'complite') {
-                addBackgroundOverlay(event.object.activity);
                 loadLogo(event);
             }
         });
