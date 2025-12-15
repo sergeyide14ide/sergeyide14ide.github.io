@@ -14,38 +14,53 @@
         attachSmoothBlur();
     }
 
-    // Плавный blur фона при скролле в реальном времени
+    // Мгновенный blur фона при скролле через MutationObserver
     function attachSmoothBlur() {
         Lampa.Listener.follow('full', (event) => {
             if (event.type !== 'complite') return;
 
             const activity = event.object.activity;
             const background = activity.render().find('.full-start__background')[0];
-            const scrollContainer = activity.render().find('.scroll')[0];
+            const scrollBody = activity.render().find('.scroll__body')[0];
             
-            if (!scrollContainer || !background) return;
-
-            let rafId = null;
+            if (!scrollBody || !background) return;
 
             const updateBlur = () => {
-                const position = scrollContainer.scrollTop;
+                const transform = scrollBody.style.transform;
+                const match = transform.match(/translate3d\(0px,\s*(-?\d+(?:\.\d+)?)px/);
                 
-                if (position > 0) {
-                    background.style.filter = 'blur(10px)';
-                    background.style.opacity = '0.8';
-                } else {
-                    background.style.filter = 'blur(0)';
-                    background.style.opacity = '1';
+                if (match) {
+                    const translateY = Math.abs(parseFloat(match[1]));
+                    
+                    if (translateY > 0) {
+                        background.style.filter = 'blur(10px)';
+                        background.style.opacity = '0.8';
+                    } else {
+                        background.style.filter = 'blur(0)';
+                        background.style.opacity = '1';
+                    }
                 }
-                
-                rafId = null;
             };
 
-            scrollContainer.addEventListener('scroll', () => {
-                if (!rafId) {
-                    rafId = requestAnimationFrame(updateBlur);
+            // MutationObserver для отслеживания изменений style
+            const observer = new MutationObserver(() => {
+                updateBlur();
+            });
+
+            observer.observe(scrollBody, {
+                attributes: true,
+                attributeFilter: ['style']
+            });
+
+            // Очистка при уничтожении активности
+            Lampa.Listener.follow('activity', (e) => {
+                if (e.type === 'destroy' && e.object.activity === activity) {
+                    observer.disconnect();
                 }
             });
+
+            // Начальная проверка
+            updateBlur();
         });
     }
 
