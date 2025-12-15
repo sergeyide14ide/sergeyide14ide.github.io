@@ -309,7 +309,7 @@
 }
 
 /* Фон */
-.full-start__background {
+.cardify .full-start__background {
     height: calc(100% + 6em);
     left: 0 !important;
 }
@@ -318,7 +318,11 @@
     opacity: 1 !important;
 }
 
-body:not(.menu--open) .full-start__background {
+.cardify .full-start__background.loaded:not(.dim) {
+    opacity: 1 !important;
+}
+
+body:not(.menu--open) .cardify .full-start__background {
     mask-image: none;
 }
 
@@ -334,12 +338,25 @@ body:not(.menu--open) .full-start__background {
     }
 }
 
+@-webkit-keyframes animation-full-background {
+    0% {
+        opacity: 0;
+        -webkit-transform: none;
+        transform: none;
+    }
+    100% {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
+    }
+}
+
 /* Увеличиваем длительность анимации фона */
-body.advanced--animation:not(.no--animation) .full-start__background.loaded {
-    -webkit-animation: animation-full-background 0.8s;
-    -moz-animation: animation-full-background 0.8s;
-    -o-animation: animation-full-background 0.8s;
-    animation: animation-full-background 0.8s;
+body.advanced--animation:not(.no--animation) .cardify .full-start__background.loaded {
+    -webkit-animation: animation-full-background 0.8s forwards !important;
+    -moz-animation: animation-full-background 0.8s forwards !important;
+    -o-animation: animation-full-background 0.8s forwards !important;
+    animation: animation-full-background 0.8s forwards !important;
 }
 
 /* Скрываем rate-line */
@@ -566,32 +583,6 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
     }
 
     // Ждём загрузки фона
-    function waitForBackground(activity, callback) {
-        const background = activity.render().find('.full-start__background');
-        let called = false;
-        
-        const safeCallback = () => {
-            if (!called) {
-                called = true;
-                callback();
-            }
-        };
-        
-        const checkBackground = () => {
-            if (background.hasClass('cardify-ready')) {
-                safeCallback();
-            } else {
-                setTimeout(checkBackground, 50);
-            }
-        };
-        
-        // Начинаем проверку
-        checkBackground();
-        
-        // Таймаут на случай проблем (2 секунды)
-        setTimeout(safeCallback, 2000);
-    }
-
     // Загружаем логотип фильма
     function loadLogo(event) {
         const data = event.data.movie;
@@ -604,12 +595,12 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         fillDescription(activity, data);
         fillAdditionalInfo(activity, data);
 
-        // Ждём загрузки фона перед анимациями
-        waitForBackground(activity, () => {
-            setTimeout(() => activity.render().find('.cardify__meta').addClass('show'), 100);
-            setTimeout(() => activity.render().find('.cardify__description').addClass('show'), 100);
-            setTimeout(() => activity.render().find('.cardify__info').addClass('show'), 100);
-        });
+        // Запускаем анимации после анимации фона (800ms)
+        setTimeout(() => {
+            activity.render().find('.cardify__meta').addClass('show');
+            activity.render().find('.cardify__description').addClass('show');
+            activity.render().find('.cardify__info').addClass('show');
+        }, 900);
 
         // Загружаем логотип
         const mediaType = data.name ? 'tv' : 'movie';
@@ -629,66 +620,27 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
                 const img = new Image();
                 img.onload = () => {
                     logoContainer.html(`<img src="${logoUrl}" alt="" />`);
-                    
-                    // Ждём фона перед показом логотипа
-                    waitForBackground(activity, () => {
-                        setTimeout(() => logoContainer.addClass('loaded'), 100);
-                    });
+                    setTimeout(() => logoContainer.addClass('loaded'), 900);
                 };
                 img.src = logoUrl;
             } else {
                 // Нет логотипа - показываем текстовое название
                 titleElement.show();
-                
-                waitForBackground(activity, () => {
-                    setTimeout(() => logoContainer.addClass('loaded'), 100);
-                });
+                setTimeout(() => logoContainer.addClass('loaded'), 900);
             }
         }).fail(() => {
             // При ошибке показываем текстовое название
             activity.render().find('.full-start-new__title').show();
-            
-            waitForBackground(activity, () => {
-                setTimeout(() => activity.render().find('.cardify__logo').addClass('loaded'), 100);
-            });
+            setTimeout(() => activity.render().find('.cardify__logo').addClass('loaded'), 900);
         });
     }
 
-    // Добавляем оверлей и контролируем загрузку фона
+    // Добавляем оверлей
     function addOverlay(activity) {
         const background = activity.render().find('.full-start__background');
         
         if (background.length && !background.next('.cardify__overlay').length) {
             background.after('<div class="full-start__background loaded cardify__overlay"></div>');
-        }
-
-        // Сбрасываем класс для новой карточки
-        if (background.length) {
-            background.removeClass('cardify-ready');
-            
-            const img = background.get(0);
-            
-            if (img && img.tagName === 'IMG') {
-                const checkAndShow = () => {
-                    if (img.complete && img.naturalHeight !== 0) {
-                        // Изображение уже загружено
-                        setTimeout(() => background.addClass('cardify-ready'), 10);
-                    } else {
-                        // Ждём загрузки
-                        img.onload = () => {
-                            background.addClass('cardify-ready');
-                        };
-                        img.onerror = () => {
-                            background.addClass('cardify-ready');
-                        };
-                    }
-                };
-                
-                // Небольшая задержка чтобы убедиться что src установлен
-                setTimeout(checkAndShow, 50);
-            } else {
-                background.addClass('cardify-ready');
-            }
         }
     }
 
