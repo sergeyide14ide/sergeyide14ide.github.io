@@ -25,13 +25,15 @@
 
             <div class="full-start-new__right">
                 <div class="cardify__left">
-                    <div class="full-start-new__head"></div>
-                    <div class="full-start-new__title" style="display: none;">{title}</div>
                     <div class="cardify__logo"></div>
-
-                    <div class="cardify__details">
-                        <div class="full-start-new__details"></div>
-                    </div>
+                    <div class="cardify__meta"></div>
+                    <div class="cardify__description"></div>
+                    <div class="cardify__info"></div>
+                    
+                    <!-- Скрытые оригинальные элементы -->
+                    <div class="full-start-new__title" style="display: none;">{title}</div>
+                    <div class="full-start-new__head" style="display: none;"></div>
+                    <div class="full-start-new__details" style="display: none;"></div>
 
                     <div class="full-start-new__buttons">
                         <div class="full-start__button selector button--play">
@@ -125,12 +127,16 @@
 }
 
 .cardify .full-start-new__title {
+    font-size: 2.5em;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1em;
     text-shadow: 0 0 .1em rgba(0, 0, 0, 0.3);
 }
 
 /* Логотип */
 .cardify__logo {
-    margin-top: 0.3em;
+    margin-bottom: 1.5em;
 }
 
 .cardify__logo img {
@@ -143,6 +149,47 @@
     object-position: left center;
 }
 
+/* Мета информация (Тип/Жанр/поджанр) */
+.cardify__meta {
+    color: #fff;
+    font-size: 1.1em;
+    margin-bottom: 1em;
+    line-height: 1.4;
+}
+
+.cardify__meta span:not(:last-child)::after {
+    content: '●';
+    margin: 0 0.5em;
+    opacity: 0.6;
+}
+
+/* Описание */
+.cardify__description {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95em;
+    line-height: 1.5;
+    margin-bottom: 1.2em;
+    max-width: 33.33%;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Дополнительная информация (Год/длительность) */
+.cardify__info {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1em;
+    line-height: 1.4;
+}
+
+.cardify__info span:not(:last-child)::after {
+    content: '●';
+    margin: 0 0.5em;
+    opacity: 0.6;
+}
+
 /* Левая и правая части */
 .cardify__left {
     flex-grow: 1;
@@ -153,10 +200,6 @@
     align-items: center;
     flex-shrink: 0;
     position: relative;
-}
-
-.cardify__details {
-    display: flex;
 }
 
 /* Реакции */
@@ -246,6 +289,67 @@ body:not(.menu--open) .full-start__background {
         return qualityMap[posterSize] || 'w500';
     }
 
+    // Заполняем мета информацию (Тип/Жанр/поджанр)
+    function fillMetaInfo(activity, data) {
+        const metaContainer = activity.render().find('.cardify__meta');
+        const metaParts = [];
+
+        // Тип контента
+        const mediaType = data.name ? 'Сериал' : 'Фильм';
+        metaParts.push(mediaType);
+
+        // Жанры (первые 2-3)
+        if (data.genres && data.genres.length) {
+            const genres = data.genres.slice(0, 2).map(g => 
+                Lampa.Utils.capitalizeFirstLetter(g.name)
+            );
+            metaParts.push(...genres);
+        }
+
+        metaContainer.html(metaParts.map(part => `<span>${part}</span>`).join(''));
+    }
+
+    // Заполняем описание
+    function fillDescription(activity, data) {
+        const descContainer = activity.render().find('.cardify__description');
+        const description = data.overview || '';
+        descContainer.text(description);
+    }
+
+    // Заполняем дополнительную информацию (Год/длительность)
+    function fillAdditionalInfo(activity, data) {
+        const infoContainer = activity.render().find('.cardify__info');
+        const infoParts = [];
+
+        // Год выпуска
+        const releaseDate = data.release_date || data.first_air_date || '';
+        if (releaseDate) {
+            const year = releaseDate.split('-')[0];
+            infoParts.push(year);
+        }
+
+        // Длительность
+        if (data.name) {
+            // Сериал - средняя продолжительность эпизода
+            if (data.episode_run_time && data.episode_run_time.length) {
+                const avgRuntime = data.episode_run_time[0];
+                infoParts.push(`${avgRuntime} мин`);
+            }
+        } else {
+            // Фильм - общая продолжительность
+            if (data.runtime && data.runtime > 0) {
+                const hours = Math.floor(data.runtime / 60);
+                const minutes = data.runtime % 60;
+                const timeStr = hours > 0 
+                    ? `${hours} ч ${minutes} мин` 
+                    : `${minutes} мин`;
+                infoParts.push(timeStr);
+            }
+        }
+
+        infoContainer.html(infoParts.map(part => `<span>${part}</span>`).join(''));
+    }
+
     // Загружаем логотип фильма
     function loadLogo(event) {
         const data = event.data.movie;
@@ -253,6 +357,12 @@ body:not(.menu--open) .full-start__background {
         
         if (!data || !activity) return;
 
+        // Заполняем основную информацию
+        fillMetaInfo(activity, data);
+        fillDescription(activity, data);
+        fillAdditionalInfo(activity, data);
+
+        // Загружаем логотип
         const mediaType = data.name ? 'tv' : 'movie';
         const apiUrl = Lampa.TMDB.api(
             `${mediaType}/${data.id}/images?api_key=${Lampa.TMDB.key()}&language=${Lampa.Storage.get('language')}`
