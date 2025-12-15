@@ -326,7 +326,7 @@ body:not(.menu--open) .full-start__background {
     mask-image: none;
 }
 
-/* Переопределяем стандартную анимацию фона на фейд (на всякий случай) */
+/* Переопределяем стандартную анимацию фона на фейд */
 @keyframes animation-full-background {
     0% {
         opacity: 0;
@@ -334,6 +334,14 @@ body:not(.menu--open) .full-start__background {
     100% {
         opacity: 1;
     }
+}
+
+/* Увеличиваем длительность анимации фона */
+body.advanced--animation:not(.no--animation) .full-start__background.loaded {
+    -webkit-animation: animation-full-background 0.8s;
+    -moz-animation: animation-full-background 0.8s;
+    -o-animation: animation-full-background 0.8s;
+    animation: animation-full-background 0.8s;
 }
 
 /* Скрываем rate-line */
