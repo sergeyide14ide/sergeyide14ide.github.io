@@ -3,10 +3,10 @@
 
     // Главная функция плагина
     function initializePlugin() {
-        console.log('Cardify', 'v2.2.0 - Added settings for ratings');
+        console.log('Applecation', 'v2.3.3 - Added beautiful icon and plugin info');
         
         if (!Lampa.Platform.screen('tv')) {
-            console.log('Cardify', 'TV mode only');
+            console.log('Applecation', 'TV mode only');
             return;
         }
 
@@ -22,32 +22,90 @@
         show_ratings: {
             ru: 'Показывать рейтинги',
             en: 'Show ratings',
-            uk: 'Показувати рейтинги'
+            uk: 'Показувати рейтинги',
+            be: 'Паказваць рэйтынгі',
+            bg: 'Показване на рейтинги',
+            cs: 'Zobrazit hodnocení',
+            he: 'הצג דירוגים',
+            pt: 'Mostrar classificações',
+            zh: '显示评分'
         },
         show_ratings_desc: {
             ru: 'Отображать рейтинги IMDB и КиноПоиск',
             en: 'Display IMDB and KinoPoisk ratings',
-            uk: 'Відображати рейтинги IMDB та КіноПошук'
+            uk: 'Відображати рейтинги IMDB та КіноПошук',
+            be: 'Адлюстроўваць рэйтынгі IMDB і КіноПошук',
+            bg: 'Показване на рейтинги IMDB и КиноПоиск',
+            cs: 'Zobrazit hodnocení IMDB a KinoPoisk',
+            he: 'הצג דירוגי IMDB וקינופויסק',
+            pt: 'Exibir classificações IMDB e KinoPoisk',
+            zh: '显示 IMDB 和 KinoPoisk 评分'
+        },
+        hide_reactions: {
+            ru: 'Скрыть реакции Lampa',
+            en: 'Hide Lampa reactions',
+            uk: 'Сховати реакції Lampa',
+            be: 'Схаваць рэакцыі Lampa',
+            bg: 'Скриване на реакции Lampa',
+            cs: 'Skrýt reakce Lampa',
+            he: 'הסתר תגובות Lampa',
+            pt: 'Ocultar reações Lampa',
+            zh: '隐藏 Lampa 反应'
+        },
+        hide_reactions_desc: {
+            ru: 'Скрыть блок с реакциями',
+            en: 'Hide reactions block',
+            uk: 'Сховати блок з реакціями',
+            be: 'Схаваць блок з рэакцыямі',
+            bg: 'Скриване на блока с реакции',
+            cs: 'Skrýt blok s reakcemi',
+            he: 'הסתר בלוק תגובות',
+            pt: 'Ocultar bloco de reações',
+            zh: '隐藏反应块'
         },
         ratings_position: {
             ru: 'Расположение рейтингов',
             en: 'Ratings position',
-            uk: 'Розташування рейтингів'
+            uk: 'Розташування рейтингів',
+            be: 'Размяшчэнне рэйтынгаў',
+            bg: 'Позиция на рейтингите',
+            cs: 'Umístění hodnocení',
+            he: 'מיקום דירוגים',
+            pt: 'Posição das classificações',
+            zh: '评分位置'
         },
         ratings_position_desc: {
             ru: 'Выберите где отображать рейтинги',
             en: 'Choose where to display ratings',
-            uk: 'Виберіть де відображати рейтинги'
+            uk: 'Виберіть де відображати рейтинги',
+            be: 'Выберыце дзе адлюстроўваць рэйтынгі',
+            bg: 'Изберете къде да се показват рейтингите',
+            cs: 'Vyberte, kde zobrazit hodnocení',
+            he: 'בחר היכן להציג דירוגים',
+            pt: 'Escolha onde exibir classificações',
+            zh: '选择评分显示位置'
         },
-        position_after_genres: {
-            ru: 'После жанров',
-            en: 'After genres',
-            uk: 'Після жанрів'
+        position_card: {
+            ru: 'В карточке',
+            en: 'In card',
+            uk: 'У картці',
+            be: 'У картцы',
+            bg: 'В картата',
+            cs: 'Na kartě',
+            he: 'בכרטיס',
+            pt: 'No cartão',
+            zh: '在卡片中'
         },
-        position_with_reactions: {
-            ru: 'Рядом с реакциями',
-            en: 'Near reactions',
-            uk: 'Поруч з реакціями'
+        position_corner: {
+            ru: 'В левом нижнем углу',
+            en: 'Bottom left corner',
+            uk: 'У лівому нижньому куті',
+            be: 'У левым ніжнім куце',
+            bg: 'В долния ляв ъгъл',
+            cs: 'V levém dolním rohu',
+            he: 'בפינה השמאלית התחתונה',
+            pt: 'Canto inferior esquerdo',
+            zh: '左下角'
         }
     };
 
@@ -59,27 +117,49 @@
     // Добавляем настройки плагина
     function addSettings() {
         // Инициализируем значения по умолчанию
-        if (Lampa.Storage.get('cardify_show_ratings') === undefined) {
-            Lampa.Storage.set('cardify_show_ratings', true);
+        if (Lampa.Storage.get('applecation_show_ratings') === undefined) {
+            Lampa.Storage.set('applecation_show_ratings', false);
         }
-        if (Lampa.Storage.get('cardify_ratings_position') === undefined) {
-            Lampa.Storage.set('cardify_ratings_position', 'after_genres');
+        if (Lampa.Storage.get('applecation_hide_reactions') === undefined) {
+            Lampa.Storage.set('applecation_hide_reactions', false);
+        }
+        if (Lampa.Storage.get('applecation_ratings_position') === undefined) {
+            Lampa.Storage.set('applecation_ratings_position', 'card');
         }
 
         // Создаем раздел настроек
         Lampa.SettingsApi.addComponent({
-            component: 'cardify_settings',
-            name: 'Cardify',
-            icon: '<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="32" height="32" rx="3" stroke="white" stroke-width="2"/><path d="M10 14L18 18L26 14M18 18V26" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>'
+            component: 'applecation_settings',
+            name: 'Applecation',
+            icon: '<svg viewBox="110 90 180 210"xmlns=http://www.w3.org/2000/svg><g id=sphere><circle cx=200 cy=140 fill="hsl(200, 80%, 40%)"opacity=0.3 r=1.2 /><circle cx=230 cy=150 fill="hsl(200, 80%, 45%)"opacity=0.35 r=1.3 /><circle cx=170 cy=155 fill="hsl(200, 80%, 42%)"opacity=0.32 r=1.2 /><circle cx=245 cy=175 fill="hsl(200, 80%, 48%)"opacity=0.38 r=1.4 /><circle cx=155 cy=180 fill="hsl(200, 80%, 44%)"opacity=0.34 r=1.3 /><circle cx=215 cy=165 fill="hsl(200, 80%, 46%)"opacity=0.36 r=1.2 /><circle cx=185 cy=170 fill="hsl(200, 80%, 43%)"opacity=0.33 r=1.3 /><circle cx=260 cy=200 fill="hsl(200, 80%, 50%)"opacity=0.4 r=1.5 /><circle cx=140 cy=200 fill="hsl(200, 80%, 50%)"opacity=0.4 r=1.5 /><circle cx=250 cy=220 fill="hsl(200, 80%, 48%)"opacity=0.38 r=1.4 /><circle cx=150 cy=225 fill="hsl(200, 80%, 47%)"opacity=0.37 r=1.4 /><circle cx=235 cy=240 fill="hsl(200, 80%, 45%)"opacity=0.35 r=1.3 /><circle cx=165 cy=245 fill="hsl(200, 80%, 44%)"opacity=0.34 r=1.3 /><circle cx=220 cy=255 fill="hsl(200, 80%, 42%)"opacity=0.32 r=1.2 /><circle cx=180 cy=258 fill="hsl(200, 80%, 41%)"opacity=0.31 r=1.2 /><circle cx=200 cy=120 fill="hsl(200, 80%, 60%)"opacity=0.5 r=1.8 /><circle cx=240 cy=135 fill="hsl(200, 80%, 65%)"opacity=0.55 r=2 /><circle cx=160 cy=140 fill="hsl(200, 80%, 62%)"opacity=0.52 r=1.9 /><circle cx=270 cy=165 fill="hsl(200, 80%, 70%)"opacity=0.6 r=2.2 /><circle cx=130 cy=170 fill="hsl(200, 80%, 67%)"opacity=0.57 r=2.1 /><circle cx=255 cy=190 fill="hsl(200, 80%, 72%)"opacity=0.62 r=2.3 /><circle cx=145 cy=195 fill="hsl(200, 80%, 69%)"opacity=0.59 r=2.2 /><circle cx=280 cy=200 fill="hsl(200, 80%, 75%)"opacity=0.65 r=2.5 /><circle cx=120 cy=200 fill="hsl(200, 80%, 75%)"opacity=0.65 r=2.5 /><circle cx=275 cy=215 fill="hsl(200, 80%, 73%)"opacity=0.63 r=2.4 /><circle cx=125 cy=220 fill="hsl(200, 80%, 71%)"opacity=0.61 r=2.3 /><circle cx=260 cy=235 fill="hsl(200, 80%, 68%)"opacity=0.58 r=2.2 /><circle cx=140 cy=240 fill="hsl(200, 80%, 66%)"opacity=0.56 r=2.1 /><circle cx=245 cy=255 fill="hsl(200, 80%, 63%)"opacity=0.53 r=2 /><circle cx=155 cy=260 fill="hsl(200, 80%, 61%)"opacity=0.51 r=1.9 /><circle cx=225 cy=270 fill="hsl(200, 80%, 58%)"opacity=0.48 r=1.8 /><circle cx=175 cy=272 fill="hsl(200, 80%, 56%)"opacity=0.46 r=1.7 /><circle cx=200 cy=100 fill="hsl(200, 80%, 85%)"opacity=0.8 r=2.8 /><circle cx=230 cy=115 fill="hsl(200, 80%, 90%)"opacity=0.85 r=3 /><circle cx=170 cy=120 fill="hsl(200, 80%, 87%)"opacity=0.82 r=2.9 /><circle cx=250 cy=140 fill="hsl(200, 80%, 92%)"opacity=0.88 r=3.2 /><circle cx=150 cy=145 fill="hsl(200, 80%, 89%)"opacity=0.84 r=3.1 /><circle cx=265 cy=170 fill="hsl(200, 80%, 95%)"opacity=0.9 r=3.4 /><circle cx=135 cy=175 fill="hsl(200, 80%, 93%)"opacity=0.87 r=3.3 /><circle cx=275 cy=200 fill="hsl(200, 80%, 98%)"opacity=0.95 r=3.5 /><circle cx=125 cy=200 fill="hsl(200, 80%, 98%)"opacity=0.95 r=3.5 /><circle cx=200 cy=200 fill="hsl(200, 80%, 100%)"opacity=1 r=4 /><circle cx=220 cy=195 fill="hsl(200, 80%, 98%)"opacity=0.95 r=3.8 /><circle cx=180 cy=205 fill="hsl(200, 80%, 97%)"opacity=0.93 r=3.7 /><circle cx=240 cy=210 fill="hsl(200, 80%, 96%)"opacity=0.92 r=3.6 /><circle cx=160 cy=215 fill="hsl(200, 80%, 95%)"opacity=0.9 r=3.5 /><circle cx=270 cy=230 fill="hsl(200, 80%, 94%)"opacity=0.88 r=3.4 /><circle cx=130 cy=235 fill="hsl(200, 80%, 92%)"opacity=0.86 r=3.3 /><circle cx=255 cy=250 fill="hsl(200, 80%, 90%)"opacity=0.84 r=3.2 /><circle cx=145 cy=255 fill="hsl(200, 80%, 88%)"opacity=0.82 r=3.1 /><circle cx=235 cy=265 fill="hsl(200, 80%, 86%)"opacity=0.8 r=3 /><circle cx=165 cy=268 fill="hsl(200, 80%, 84%)"opacity=0.78 r=2.9 /><circle cx=215 cy=280 fill="hsl(200, 80%, 82%)"opacity=0.76 r=2.8 /><circle cx=185 cy=282 fill="hsl(200, 80%, 80%)"opacity=0.74 r=2.7 /><circle cx=200 cy=290 fill="hsl(200, 80%, 78%)"opacity=0.72 r=2.6 /><circle cx=210 cy=130 fill="hsl(200, 80%, 88%)"opacity=0.83 r=2.5 /><circle cx=190 cy=135 fill="hsl(200, 80%, 86%)"opacity=0.81 r=2.4 /><circle cx=225 cy=155 fill="hsl(200, 80%, 91%)"opacity=0.86 r=2.8 /><circle cx=175 cy=160 fill="hsl(200, 80%, 89%)"opacity=0.84 r=2.7 /><circle cx=245 cy=185 fill="hsl(200, 80%, 94%)"opacity=0.89 r=3.3 /><circle cx=155 cy=190 fill="hsl(200, 80%, 92%)"opacity=0.87 r=3.2 /><circle cx=260 cy=210 fill="hsl(200, 80%, 95%)"opacity=0.91 r=3.4 /><circle cx=140 cy=215 fill="hsl(200, 80%, 93%)"opacity=0.88 r=3.3 /><circle cx=250 cy=230 fill="hsl(200, 80%, 91%)"opacity=0.85 r=3.2 /><circle cx=150 cy=235 fill="hsl(200, 80%, 89%)"opacity=0.83 r=3.1 /><circle cx=230 cy=245 fill="hsl(200, 80%, 87%)"opacity=0.81 r=3 /><circle cx=170 cy=250 fill="hsl(200, 80%, 85%)"opacity=0.79 r=2.9 /><circle cx=210 cy=260 fill="hsl(200, 80%, 83%)"opacity=0.77 r=2.8 /><circle cx=190 cy=265 fill="hsl(200, 80%, 81%)"opacity=0.75 r=2.7 /></g></svg>'
+        });
+        
+        // Добавляем информацию о плагине
+        Lampa.SettingsApi.addParam({
+            component: 'applecation_settings',
+            param: {
+                name: 'applecation_about',
+                type: 'static'
+            },
+            field: {
+                name: '<div style="color: rgba(255,255,255,0.5);">Applecation v2.3.2</div>'
+            },
+            onRender: function(item) {
+                item.find('.settings-param__name').css({
+                    'font-size': '1.2em',
+                    'margin-bottom': '0.3em'
+                });
+                item.append('<div style="color: rgba(255,255,255,0.3); font-size: 0.9em; padding: 0 1.2em; line-height: 1.4;">Автор: IEI<br>Красивый дизайн карточек фильмов для Lampa TV с анимациями, настраиваемыми рейтингами и реакциями</div>');
+            }
         });
 
         // Показывать рейтинги
         Lampa.SettingsApi.addParam({
-            component: 'cardify_settings',
+            component: 'applecation_settings',
             param: {
-                name: 'cardify_show_ratings',
+                name: 'applecation_show_ratings',
                 type: 'trigger',
-                default: true
+                default: false
             },
             field: {
                 name: t('show_ratings'),
@@ -87,69 +167,76 @@
             },
             onChange: function(value) {
                 if (value) {
-                    $('body').removeClass('cardify--hide-ratings');
+                    $('body').removeClass('applecation--hide-ratings');
                 } else {
-                    $('body').addClass('cardify--hide-ratings');
+                    $('body').addClass('applecation--hide-ratings');
                 }
             }
         });
 
         // Расположение рейтингов
         Lampa.SettingsApi.addParam({
-            component: 'cardify_settings',
+            component: 'applecation_settings',
             param: {
-                name: 'cardify_ratings_position',
+                name: 'applecation_ratings_position',
                 type: 'select',
                 values: {
-                    after_genres: t('position_after_genres'),
-                    with_reactions: t('position_with_reactions')
+                    card: t('position_card'),
+                    corner: t('position_corner')
                 },
-                default: 'after_genres'
+                default: 'card'
             },
             field: {
                 name: t('ratings_position'),
                 description: t('ratings_position_desc')
             },
             onChange: function(value) {
-                $('body').removeClass('cardify--ratings-after-genres cardify--ratings-with-reactions');
-                $('body').addClass('cardify--ratings-' + value.replace('_', '-'));
-                
-                // Перезагружаем текущую активность для применения изменений
-                Lampa.Activity.active().activity.restart();
+                Lampa.Storage.set('applecation_ratings_position', value);
+                $('body').removeClass('applecation--ratings-card applecation--ratings-corner');
+                $('body').addClass('applecation--ratings-' + value);
+                // Обновляем шаблон и перезагружаем активность
+                addCustomTemplate();
+                Lampa.Activity.back();
+            }
+        });
+
+        // Скрыть реакции
+        Lampa.SettingsApi.addParam({
+            component: 'applecation_settings',
+            param: {
+                name: 'applecation_hide_reactions',
+                type: 'trigger',
+                default: false
+            },
+            field: {
+                name: t('hide_reactions'),
+                description: t('hide_reactions_desc')
+            },
+            onChange: function(value) {
+                if (value) {
+                    $('body').addClass('applecation--hide-reactions');
+                } else {
+                    $('body').removeClass('applecation--hide-reactions');
+                }
             }
         });
 
         // Применяем текущие настройки
-        if (!Lampa.Storage.get('cardify_show_ratings')) {
-            $('body').addClass('cardify--hide-ratings');
+        if (!Lampa.Storage.get('applecation_show_ratings', false)) {
+            $('body').addClass('applecation--hide-ratings');
         }
-        $('body').addClass('cardify--ratings-' + Lampa.Storage.get('cardify_ratings_position').replace('_', '-'));
+        $('body').addClass('applecation--ratings-' + Lampa.Storage.get('applecation_ratings_position', 'card'));
+        if (Lampa.Storage.get('applecation_hide_reactions', false)) {
+            $('body').addClass('applecation--hide-reactions');
+        }
     }
 
     function addCustomTemplate() {
-        const template = `<div class="full-start-new cardify">
-        <div class="full-start-new__body">
-            <div class="full-start-new__left hide">
-                <div class="full-start-new__poster">
-                    <img class="full-start-new__img full--poster" />
-                </div>
-            </div>
-
-            <div class="full-start-new__right">
-                <div class="cardify__left">
-                    <div class="cardify__logo"></div>
-                    <div class="full-start-new__title" style="display: none;">{title}</div>
-                    
-                    <div class="cardify__meta">
-                        <div class="cardify__meta-left">
-                            <span class="cardify__network"></span>
-                            <span class="cardify__meta-text"></span>
-                            <div class="full-start__pg hide"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Рейтинги -->
-                    <div class="cardify__ratings">
+        const ratingsPosition = Lampa.Storage.get('applecation_ratings_position', 'card');
+        
+        // Блок с рейтингами
+        const ratingsBlock = `<!-- Рейтинги -->
+                    <div class="applecation__ratings">
                         <div class="rate--imdb hide">
                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
                                 <path fill="currentColor" d="M4 7c-1.103 0-2 .897-2 2v6.4c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V9c0-1.103-.897-2-2-2H4Zm1.4 2.363h1.275v5.312H5.4V9.362Zm1.962 0H9l.438 2.512.287-2.512h1.75v5.312H10.4v-3l-.563 3h-.8l-.512-3v3H7.362V9.362Zm8.313 0H17v1.2c.16-.16.516-.363.875-.363.36.04.84.283.8.763v3.075c0 .24-.075.404-.275.524-.16.04-.28.075-.6.075-.32 0-.795-.196-.875-.237-.08-.04-.163.275-.163.275h-1.087V9.362Zm-3.513.037H13.6c.88 0 1.084.078 1.325.237.24.16.35.397.35.838v3.2c0 .32-.15.563-.35.762-.2.2-.484.288-1.325.288h-1.438V9.4Zm1.275.8v3.563c.2 0 .488.04.488-.2v-3.126c0-.28-.247-.237-.488-.237Zm3.763.675c-.12 0-.2.08-.2.2v2.688c0 .159.08.237.2.237.12 0 .2-.117.2-.238l-.037-2.687c0-.12-.043-.2-.163-.2Z"/>
@@ -162,10 +249,33 @@
                             </svg>
                             <div>0.0</div>
                         </div>
+                    </div>`;
+        
+        const template = `<div class="full-start-new applecation">
+        <div class="full-start-new__body">
+            <div class="full-start-new__left hide">
+                <div class="full-start-new__poster">
+                    <img class="full-start-new__img full--poster" />
+                </div>
+            </div>
+
+            <div class="full-start-new__right">
+                <div class="applecation__left">
+                    <div class="applecation__logo"></div>
+                    <div class="full-start-new__title" style="display: none;">{title}</div>
+                    
+                    <div class="applecation__meta">
+                        <div class="applecation__meta-left">
+                            <span class="applecation__network"></span>
+                            <span class="applecation__meta-text"></span>
+                            <div class="full-start__pg hide"></div>
+                        </div>
                     </div>
                     
-                    <div class="cardify__description"></div>
-                    <div class="cardify__info"></div>
+                    ${ratingsPosition === 'card' ? ratingsBlock : ''}
+                    
+                    <div class="applecation__description"></div>
+                    <div class="applecation__info"></div>
                     
                     <!-- Скрытые оригинальные элементы -->
                     <div class="full-start-new__head" style="display: none;"></div>
@@ -213,26 +323,12 @@
                     </div>
                 </div>
 
-                <div class="cardify__right">
-                    <!-- Рейтинги рядом с реакциями (альтернативное расположение) -->
-                    <div class="cardify__ratings cardify__ratings--alt">
-                        <div class="rate--imdb hide">
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                                <path fill="currentColor" d="M4 7c-1.103 0-2 .897-2 2v6.4c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V9c0-1.103-.897-2-2-2H4Zm1.4 2.363h1.275v5.312H5.4V9.362Zm1.962 0H9l.438 2.512.287-2.512h1.75v5.312H10.4v-3l-.563 3h-.8l-.512-3v3H7.362V9.362Zm8.313 0H17v1.2c.16-.16.516-.363.875-.363.36.04.84.283.8.763v3.075c0 .24-.075.404-.275.524-.16.04-.28.075-.6.075-.32 0-.795-.196-.875-.237-.08-.04-.163.275-.163.275h-1.087V9.362Zm-3.513.037H13.6c.88 0 1.084.078 1.325.237.24.16.35.397.35.838v3.2c0 .32-.15.563-.35.762-.2.2-.484.288-1.325.288h-1.438V9.4Zm1.275.8v3.563c.2 0 .488.04.488-.2v-3.126c0-.28-.247-.237-.488-.237Zm3.763.675c-.12 0-.2.08-.2.2v2.688c0 .159.08.237.2.237.12 0 .2-.117.2-.238l-.037-2.687c0-.12-.043-.2-.163-.2Z"/>
-                            </svg>
-                            <div>0.0</div>
-                        </div>
-                        <div class="rate--kp hide">
-                            <svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" fill="none">
-                                <path d="M96.5 20 66.1 75.733V20H40.767v152H66.1v-55.733L96.5 172h35.467C116.767 153.422 95.2 133.578 80 115c28.711 16.889 63.789 35.044 92.5 51.933v-30.4C148.856 126.4 108.644 115.133 85 105c23.644 3.378 63.856 7.889 87.5 11.267v-30.4L85 90c27.022-11.822 60.478-22.711 87.5-34.533v-30.4C143.789 41.956 108.711 63.11 80 80l51.967-60z" style="fill:none;stroke:currentColor;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10"/>
-                            </svg>
-                            <div>0.0</div>
-                        </div>
-                    </div>
-                    
+                <div class="applecation__right">
                     <div class="full-start-new__reactions selector">
                         <div>#{reactions_none}</div>
                     </div>
+                    
+                    ${ratingsPosition === 'corner' ? ratingsBlock : ''}
 
                     <!-- Скрытый элемент для совместимости (предотвращает выход реакций за экран) -->
                     <div class="full-start-new__rate-line">
@@ -268,20 +364,20 @@
     function addStyles() {
         const styles = `<style>
 /* Основной контейнер */
-.cardify {
+.applecation {
     transition: all .3s;
 }
 
-.cardify .full-start-new__body {
+.applecation .full-start-new__body {
     height: 80vh;
 }
 
-.cardify .full-start-new__right {
+.applecation .full-start-new__right {
     display: flex;
     align-items: flex-end;
 }
 
-.cardify .full-start-new__title {
+.applecation .full-start-new__title {
     font-size: 2.5em;
     font-weight: 700;
     line-height: 1.2;
@@ -290,19 +386,19 @@
 }
 
 /* Логотип */
-.cardify__logo {
+.applecation__logo {
     margin-bottom: 0.5em;
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.4s ease-out, transform 0.4s ease-out;
 }
 
-.cardify__logo.loaded {
+.applecation__logo.loaded {
     opacity: 1;
     transform: translateY(0);
 }
 
-.cardify__logo img {
+.applecation__logo img {
     display: block;
     max-width: 35vw;
     max-height: 180px;
@@ -313,12 +409,12 @@
 }
 
 /* Мета информация (Тип/Жанр/поджанр) */
-.cardify__meta {
+.applecation__meta {
     display: flex;
     align-items: center;
     color: #fff;
     font-size: 1.1em;
-    margin-bottom: 0.8em;
+    margin-bottom: 0.5em;
     line-height: 1;
     opacity: 0;
     transform: translateY(15px);
@@ -326,24 +422,24 @@
     transition-delay: 0.05s;
 }
 
-.cardify__meta.show {
+.applecation__meta.show {
     opacity: 1;
     transform: translateY(0);
 }
 
-.cardify__meta-left {
+.applecation__meta-left {
     display: flex;
     align-items: center;
     line-height: 1;
 }
 
-.cardify__network {
+.applecation__network {
     display: inline-flex;
     align-items: center;
     line-height: 1;
 }
 
-.cardify__network img {
+.applecation__network img {
     display: block;
     max-height: 0.8em;
     width: auto;
@@ -351,12 +447,12 @@
     filter: brightness(0) invert(1);
 }
 
-.cardify__meta-text {
+.applecation__meta-text {
     margin-left: 1em;
     line-height: 1;
 }
 
-.cardify__meta .full-start__pg {
+.applecation__meta .full-start__pg {
     margin: 0 0 0 0.6em;
     padding: 0.2em 0.5em;
     font-size: 0.85em;
@@ -369,87 +465,69 @@
     vertical-align: middle;
 }
 
-/* Рейтинги - базовые стили */
-.cardify__ratings {
+/* Рейтинги */
+.applecation__ratings {
     display: flex;
     align-items: center;
     gap: 0.8em;
-}
-
-.cardify__ratings .rate--imdb,
-.cardify__ratings .rate--kp {
-    display: flex;
-    align-items: center;
-    gap: 0.35em;
-}
-
-.cardify__ratings svg {
-    width: 1.8em;
-    height: auto;
-    flex-shrink: 0;
-    color: rgba(255, 255, 255, 0.85);
-}
-
-.cardify__ratings > div > div {
-    font-size: 0.95em;
-    font-weight: 600;
-    line-height: 1;
-    color: #fff;
-}
-
-/* Рейтинги после жанров (основное расположение) */
-.cardify__left .cardify__ratings {
-    margin-bottom: 0.8em;
+    margin-bottom: 0.5em;
     opacity: 0;
     transform: translateY(15px);
     transition: opacity 0.4s ease-out, transform 0.4s ease-out;
     transition-delay: 0.08s;
 }
 
-.cardify__left .cardify__ratings.show {
+.applecation__ratings.show {
     opacity: 1;
     transform: translateY(0);
 }
 
-/* Рейтинги рядом с реакциями (альтернативное расположение) */
-.cardify__ratings--alt {
-    margin: 0;
-    opacity: 0;
-    transform: translateY(15px);
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-    transition-delay: 0.15s;
+.applecation__ratings .rate--imdb,
+.applecation__ratings .rate--kp {
+    display: flex;
+    align-items: center;
+    gap: 0.35em;
 }
 
-.cardify__ratings--alt.show {
-    opacity: 1;
-    transform: translateY(0);
+.applecation__ratings svg {
+    width: 1.8em;
+    height: auto;
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.85);
 }
 
-/* Управление видимостью через настройки */
-body.cardify--hide-ratings .cardify__ratings {
+.applecation__ratings .rate--kp svg {
+    width: 1.5em;
+}
+
+.applecation__ratings > div > div {
+    font-size: 0.95em;
+    font-weight: 600;
+    line-height: 1;
+    color: #fff;
+}
+
+/* Управление видимостью рейтингов через настройки */
+body.applecation--hide-ratings .applecation__ratings {
     display: none !important;
 }
 
-/* Расположение "После жанров" - показываем основные, скрываем альтернативные */
-body.cardify--ratings-after-genres .cardify__left .cardify__ratings {
-    display: flex;
+/* Скрытие реакций через настройки */
+body.applecation--hide-reactions .full-start-new__reactions {
+    display: none !important;
 }
 
-body.cardify--ratings-after-genres .cardify__ratings--alt {
-    display: none;
+/* Расположение рейтингов - в левом нижнем углу */
+body.applecation--ratings-corner .applecation__right {
+    gap: 1em;
 }
 
-/* Расположение "Рядом с реакциями" - скрываем основные, показываем альтернативные */
-body.cardify--ratings-with-reactions .cardify__left .cardify__ratings {
-    display: none;
-}
-
-body.cardify--ratings-with-reactions .cardify__ratings--alt {
-    display: flex;
+body.applecation--ratings-corner .applecation__ratings {
+    margin-bottom: 0;
 }
 
 /* Описание */
-.cardify__description {
+.applecation__description {
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.95em;
     line-height: 1.5;
@@ -466,13 +544,13 @@ body.cardify--ratings-with-reactions .cardify__ratings--alt {
     transition-delay: 0.1s;
 }
 
-.cardify__description.show {
+.applecation__description.show {
     opacity: 1;
     transform: translateY(0);
 }
 
 /* Дополнительная информация (Год/длительность) */
-.cardify__info {
+.applecation__info {
     color: rgba(255, 255, 255, 0.75);
     font-size: 1em;
     line-height: 1.4;
@@ -483,90 +561,82 @@ body.cardify--ratings-with-reactions .cardify__ratings--alt {
     transition-delay: 0.15s;
 }
 
-.cardify__info.show {
+.applecation__info.show {
     opacity: 1;
     transform: translateY(0);
 }
 
 /* Левая и правая части */
-.cardify__left {
+.applecation__left {
     flex-grow: 1;
 }
 
-.cardify__right {
+.applecation__right {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: flex-end;
+    align-items: center;
     flex-shrink: 0;
     position: relative;
-    gap: 1em;
+}
+
+/* Выравнивание по baseline только если реакции видны и рейтинги в углу */
+body.applecation--ratings-corner:not(.applecation--hide-reactions) .applecation__right {
+    align-items: last baseline;
 }
 
 /* Реакции */
-.cardify .full-start-new__reactions {
+.applecation .full-start-new__reactions {
     margin: 0;
-    position: relative;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
 }
 
-.cardify .full-start-new__reactions:not(.focus) {
+.applecation .full-start-new__reactions > div {
+    align-self: flex-end;
+}
+
+.applecation .full-start-new__reactions:not(.focus) {
     margin: 0;
 }
 
-.cardify .full-start-new__reactions:not(.focus) > div:not(:first-child) {
+.applecation .full-start-new__reactions:not(.focus) > div:not(:first-child) {
     display: none;
 }
 
-.cardify .full-start-new__reactions:not(.focus) .reaction {
-    position: relative;
+/* Стили первой реакции (всегда видимой) */
+.applecation .full-start-new__reactions > div:first-child .reaction {
+    display: flex !important;
+    align-items: center !important;
+    background-color: rgba(0, 0, 0, 0) !important;
+    gap: 0 !important;
 }
 
-.cardify .full-start-new__reactions:not(.focus) .reaction__count {
-    position: absolute;
-    top: 28%;
-    left: 95%;
-    font-size: 1.2em;
-    font-weight: 500;
+.applecation .full-start-new__reactions > div:first-child .reaction__icon {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    -webkit-border-radius: 5em;
+    -moz-border-radius: 5em;
+    border-radius: 5em;
+    padding: 0.5em;
+    width: 2.6em !important;
+    height: 2.6em !important;
+}
+
+.applecation .full-start-new__reactions > div:first-child .reaction__count {
+    font-size: 1.2em !important;
+    font-weight: 500 !important;
 }
 
 /* При фокусе реакции раскрываются вверх */
-.cardify .full-start-new__reactions.focus {
-    display: flex;
-    flex-direction: column;
+.applecation .full-start-new__reactions.focus {
+    gap: 0.5em;
 }
 
-.cardify .full-start-new__reactions.focus > div {
+.applecation .full-start-new__reactions.focus > div {
     display: block;
 }
 
-.cardify .full-start-new__reactions.focus > div:not(:last-child) {
-    position: absolute;
-    right: 0;
-}
-
-/* Позиционируем каждую реакцию выше предыдущей */
-.cardify .full-start-new__reactions.focus > div:nth-last-child(2) {
-    bottom: calc(100% + 0.5em);
-}
-
-.cardify .full-start-new__reactions.focus > div:nth-last-child(3) {
-    bottom: calc(200% + 1em);
-}
-
-.cardify .full-start-new__reactions.focus > div:nth-last-child(4) {
-    bottom: calc(300% + 1.5em);
-}
-
-.cardify .full-start-new__reactions.focus > div:nth-last-child(5) {
-    bottom: calc(400% + 2em);
-}
-
-.cardify .full-start-new__reactions.focus > div:nth-last-child(6) {
-    bottom: calc(500% + 2.5em);
-}
-
 /* Скрываем стандартный rate-line (используется только для статуса) */
-.cardify .full-start-new__rate-line {
+.applecation .full-start-new__rate-line {
     margin: 0;
     height: 0;
     overflow: hidden;
@@ -594,7 +664,7 @@ body.cardify--ratings-with-reactions .cardify__ratings--alt {
 }
 
 /* Удерживаем opacity при загрузке нового фона */
-.full-start__background.loaded.cardify-animated {
+.full-start__background.loaded.applecation-animated {
     opacity: 1 !important;
 }
 
@@ -608,20 +678,19 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
 }
 
 /* Скрываем статус для предотвращения выхода реакций за экран */
-.cardify .full-start__status {
-    visibility: hidden;
-    width: 1px;
+.applecation .full-start__status {
+    display: none;
 }
 
 /* Оверлей для затемнения левого края */
-.cardify__overlay {
+.applecation__overlay {
     width: 90vw;
     background: linear-gradient(to right, rgba(0, 0, 0, 0.792) 0%, rgba(0, 0, 0, 0.504) 25%, rgba(0, 0, 0, 0.264) 45%, rgba(0, 0, 0, 0.12) 55%, rgba(0, 0, 0, 0.043) 60%, rgba(0, 0, 0, 0) 65%);
 }
 </style>`;
         
-        Lampa.Template.add('cardify_css', styles);
-        $('body').append(Lampa.Template.get('cardify_css', {}, true));
+        Lampa.Template.add('applecation_css', styles);
+        $('body').append(Lampa.Template.get('applecation_css', {}, true));
     }
 
     // Патчим Api.img для улучшенного качества фона
@@ -679,7 +748,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
 
     // Загружаем иконку студии/сети
     function loadNetworkIcon(activity, data) {
-        const networkContainer = activity.render().find('.cardify__network');
+        const networkContainer = activity.render().find('.applecation__network');
         
         // Для сериалов - телесеть
         if (data.networks && data.networks.length) {
@@ -707,7 +776,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
 
     // Заполняем мета информацию (Тип/Жанр/поджанр)
     function fillMetaInfo(activity, data) {
-        const metaTextContainer = activity.render().find('.cardify__meta-text');
+        const metaTextContainer = activity.render().find('.applecation__meta-text');
         const metaParts = [];
 
         // Тип контента
@@ -729,7 +798,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
 
     // Заполняем описание
     function fillDescription(activity, data) {
-        const descContainer = activity.render().find('.cardify__description');
+        const descContainer = activity.render().find('.applecation__description');
         const description = data.overview || '';
         descContainer.text(description);
     }
@@ -790,7 +859,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
 
     // Заполняем дополнительную информацию (Год/длительность)
     function fillAdditionalInfo(activity, data) {
-        const infoContainer = activity.render().find('.cardify__info');
+        const infoContainer = activity.render().find('.applecation__info');
         const infoParts = [];
 
         // Год выпуска
@@ -846,17 +915,10 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         // Ждем когда фон загрузится и появится
         waitForBackgroundLoad(activity, () => {
             // После загрузки фона показываем контент
-            activity.render().find('.cardify__meta').addClass('show');
-            activity.render().find('.cardify__description').addClass('show');
-            activity.render().find('.cardify__info').addClass('show');
-            
-            // Показываем рейтинги в зависимости от настройки
-            const ratingsPosition = Lampa.Storage.get('cardify_ratings_position', 'after_genres');
-            if (ratingsPosition === 'after_genres') {
-                activity.render().find('.cardify__left .cardify__ratings').addClass('show');
-            } else {
-                activity.render().find('.cardify__ratings--alt').addClass('show');
-            }
+            activity.render().find('.applecation__meta').addClass('show');
+            activity.render().find('.applecation__description').addClass('show');
+            activity.render().find('.applecation__info').addClass('show');
+            activity.render().find('.applecation__ratings').addClass('show');
         });
 
         // Загружаем логотип
@@ -866,7 +928,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         );
 
         $.get(apiUrl, (imagesData) => {
-            const logoContainer = activity.render().find('.cardify__logo');
+            const logoContainer = activity.render().find('.applecation__logo');
             const titleElement = activity.render().find('.full-start-new__title');
 
             if (imagesData.logos && imagesData.logos[0]) {
@@ -893,14 +955,14 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
             // При ошибке показываем текстовое название
             activity.render().find('.full-start-new__title').show();
             waitForBackgroundLoad(activity, () => {
-                activity.render().find('.cardify__logo').addClass('loaded');
+                activity.render().find('.applecation__logo').addClass('loaded');
             });
         });
     }
 
     // Ждем загрузки и появления фона
     function waitForBackgroundLoad(activity, callback) {
-        const background = activity.render().find('.full-start__background:not(.cardify__overlay)');
+        const background = activity.render().find('.full-start__background:not(.applecation__overlay)');
         
         if (!background.length) {
             callback();
@@ -908,7 +970,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         }
 
         // Если фон уже загружен и анимация завершена
-        if (background.hasClass('loaded') && background.hasClass('cardify-animated')) {
+        if (background.hasClass('loaded') && background.hasClass('applecation-animated')) {
             callback();
             return;
         }
@@ -917,7 +979,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         if (background.hasClass('loaded')) {
             // Ждем завершения transition + небольшая задержка для надежности
             setTimeout(() => {
-                background.addClass('cardify-animated');
+                background.addClass('applecation-animated');
                 callback();
             }, 650); // 600ms transition + 50ms запас
             return;
@@ -929,7 +991,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
                 clearInterval(checkInterval);
                 // Ждем завершения transition + небольшая задержка
                 setTimeout(() => {
-                    background.addClass('cardify-animated');
+                    background.addClass('applecation-animated');
                     callback();
                 }, 650); // 600ms transition + 50ms запас
             }
@@ -938,8 +1000,8 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         // Таймаут на случай если что-то пошло не так
         setTimeout(() => {
             clearInterval(checkInterval);
-            if (!background.hasClass('cardify-animated')) {
-                background.addClass('cardify-animated');
+            if (!background.hasClass('applecation-animated')) {
+                background.addClass('applecation-animated');
                 callback();
             }
         }, 2000);
@@ -948,8 +1010,8 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
     // Добавляем оверлей рядом с фоном
     function addOverlay(activity) {
         const background = activity.render().find('.full-start__background');
-        if (background.length && !background.next('.cardify__overlay').length) {
-            background.after('<div class="full-start__background loaded cardify__overlay"></div>');
+        if (background.length && !background.next('.applecation__overlay').length) {
+            background.after('<div class="full-start__background loaded applecation__overlay"></div>');
         }
     }
 
