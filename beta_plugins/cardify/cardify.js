@@ -3,7 +3,7 @@
 
     // Главная функция плагина
     function initializePlugin() {
-        console.log('Cardify', 'v2.1.1 - Simplified ratings integration');
+        console.log('Cardify', 'v2.1.2 - Fixed ratings and vertical reactions');
         
         if (!Lampa.Platform.screen('tv')) {
             console.log('Cardify', 'TV mode only');
@@ -108,13 +108,13 @@
                         <div>#{reactions_none}</div>
                     </div>
 
-                    <!-- Скрытый контейнер для совместимости с плагинами -->
-                    <div class="full-start-new__rate-line" style="display: none;">
-                        <div class="full-start__rate rate--tmdb hide"><div>{rating}</div><div>TMDB</div></div>
-                        <div class="full-start__rate rate--imdb hide"><div></div><div>IMDB</div></div>
-                        <div class="full-start__rate rate--kp hide"><div></div><div>KP</div></div>
+                    <!-- Скрытый элемент для совместимости (предотвращает выход реакций за экран) -->
+                    <div class="full-start-new__rate-line">
                         <div class="full-start__status hide"></div>
                     </div>
+                    
+                    <!-- Пустой маркер для предотвращения вставки элементов от modss.js -->
+                    <div class="rating--modss" style="display: none;"></div>
                 </div>
             </div>
         </div>
@@ -336,7 +336,9 @@
 /* Реакции */
 .cardify .full-start-new__reactions {
     margin: 0;
-    margin-right: -2.8em;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
 }
 
 .cardify .full-start-new__reactions:not(.focus) {
@@ -359,14 +361,22 @@
     font-weight: 500;
 }
 
-/* Рейтинги */
-.cardify .full-start-new__rate-line {
-    margin: 0;
-    margin-left: 3.5em;
+/* При фокусе реакции раскрываются вверх */
+.cardify .full-start-new__reactions.focus {
+    gap: 0.5em;
 }
 
-.cardify .full-start-new__rate-line > *:last-child {
-    margin-right: 0 !important;
+.cardify .full-start-new__reactions.focus > div {
+    display: block;
+}
+
+/* Скрываем стандартный rate-line (используется только для статуса) */
+.cardify .full-start-new__rate-line {
+    margin: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Фон - переопределяем стандартную анимацию на fade */
