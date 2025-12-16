@@ -637,15 +637,6 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         fillMetaInfo(activity, data);
         fillDescription(activity, data);
         fillAdditionalInfo(activity, data);
-        
-        // Показываем контейнер рейтингов (плагины сами заполнят значения)
-        setTimeout(() => {
-            const hasVisibleRating = !activity.render().find('.cardify__ratings .rate--imdb').hasClass('hide') || 
-                                     !activity.render().find('.cardify__ratings .rate--kp').hasClass('hide');
-            if (hasVisibleRating) {
-                activity.render().find('.cardify__ratings').addClass('show');
-            }
-        }, 100);
 
         // Ждем когда фон загрузится и появится
         waitForBackgroundLoad(activity, () => {
@@ -653,6 +644,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
             activity.render().find('.cardify__meta').addClass('show');
             activity.render().find('.cardify__description').addClass('show');
             activity.render().find('.cardify__info').addClass('show');
+            activity.render().find('.cardify__ratings').addClass('show');
         });
 
         // Загружаем логотип
