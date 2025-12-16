@@ -3,7 +3,7 @@
 
     // Главная функция плагина
     function initializePlugin() {
-        console.log('Cardify', 'v2.0.2 - Optimized animations and background loading');
+        console.log('Cardify', 'v2.1.0 - Ratings integration and optimized animations');
         
         if (!Lampa.Platform.screen('tv')) {
             console.log('Cardify', 'TV mode only');
@@ -37,6 +37,23 @@
                             <div class="full-start__pg hide"></div>
                         </div>
                     </div>
+                    
+                    <!-- Рейтинги -->
+                    <div class="cardify__ratings">
+                        <div class="cardify__rating rate--imdb hide">
+                            <svg class="cardify__rating-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                <path fill="currentColor" d="M4 7c-1.103 0-2 .897-2 2v6.4c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V9c0-1.103-.897-2-2-2H4Zm1.4 2.363h1.275v5.312H5.4V9.362Zm1.962 0H9l.438 2.512.287-2.512h1.75v5.312H10.4v-3l-.563 3h-.8l-.512-3v3H7.362V9.362Zm8.313 0H17v1.2c.16-.16.516-.363.875-.363.36.04.84.283.8.763v3.075c0 .24-.075.404-.275.524-.16.04-.28.075-.6.075-.32 0-.795-.196-.875-.237-.08-.04-.163.275-.163.275h-1.087V9.362Zm-3.513.037H13.6c.88 0 1.084.078 1.325.237.24.16.35.397.35.838v3.2c0 .32-.15.563-.35.762-.2.2-.484.288-1.325.288h-1.438V9.4Zm1.275.8v3.563c.2 0 .488.04.488-.2v-3.126c0-.28-.247-.237-.488-.237Zm3.763.675c-.12 0-.2.08-.2.2v2.688c0 .159.08.237.2.237.12 0 .2-.117.2-.238l-.037-2.687c0-.12-.043-.2-.163-.2Z"/>
+                            </svg>
+                            <span class="cardify__rating-value">0.0</span>
+                        </div>
+                        <div class="cardify__rating rate--kp hide">
+                            <svg class="cardify__rating-icon" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                <path d="M96.5 20 66.1 75.733V20H40.767v152H66.1v-55.733L96.5 172h35.467C116.767 153.422 95.2 133.578 80 115c28.711 16.889 63.789 35.044 92.5 51.933v-30.4C148.856 126.4 108.644 115.133 85 105c23.644 3.378 63.856 7.889 87.5 11.267v-30.4L85 90c27.022-11.822 60.478-22.711 87.5-34.533v-30.4C143.789 41.956 108.711 63.11 80 80l51.967-60z" style="fill:none;stroke:currentColor;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10"/>
+                            </svg>
+                            <span class="cardify__rating-value">0.0</span>
+                        </div>
+                    </div>
+                    
                     <div class="cardify__description"></div>
                     <div class="cardify__info"></div>
                     
@@ -91,7 +108,11 @@
                         <div>#{reactions_none}</div>
                     </div>
 
-                    <div class="full-start-new__rate-line">
+                    <!-- Скрытый контейнер для совместимости с плагинами -->
+                    <div class="full-start-new__rate-line" style="display: none;">
+                        <div class="full-start__rate rate--tmdb hide"><div>{rating}</div><div>TMDB</div></div>
+                        <div class="full-start__rate rate--imdb hide"><div></div><div>IMDB</div></div>
+                        <div class="full-start__rate rate--kp hide"><div></div><div>KP</div></div>
                         <div class="full-start__status hide"></div>
                     </div>
                 </div>
@@ -171,7 +192,7 @@
     align-items: center;
     color: #fff;
     font-size: 1.1em;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.8em;
     line-height: 1;
     opacity: 0;
     transform: translateY(15px);
@@ -220,6 +241,51 @@
     color: rgba(255, 255, 255, 0.9);
     line-height: 1;
     vertical-align: middle;
+}
+
+/* Рейтинги */
+.cardify__ratings {
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+    margin-bottom: 0.8em;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    transition-delay: 0.08s;
+}
+
+.cardify__ratings.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cardify__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.cardify__rating-icon {
+    width: 2.5em;
+    height: auto;
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.cardify__rating-value {
+    font-size: 1.3em;
+    line-height: 1;
+    min-width: 1.8em;
+    text-align: left;
+}
+
+/* Скрываем рейтинги по умолчанию */
+.cardify__rating.hide {
+    display: none;
 }
 
 /* Описание */
@@ -341,12 +407,6 @@ body:not(.menu--open) .full-start__background {
 /* Отключаем стандартную анимацию Lampa для фона */
 body.advanced--animation:not(.no--animation) .full-start__background.loaded {
     animation: none !important;
-}
-
-/* Скрываем rate-line */
-.cardify .full-start__status {
-    visibility: hidden;
-    width: 1px;
 }
 
 /* Оверлей для затемнения левого края */
@@ -567,6 +627,67 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         infoContainer.html(infoParts.join(' · '));
     }
 
+    // Синхронизация рейтингов из стандартных элементов в кастомные
+    function syncRatings(activity) {
+        const render = activity.render();
+        
+        // Наблюдаем за изменениями стандартных элементов рейтингов
+        const observer = new MutationObserver(() => {
+            // IMDB
+            const imdbStandard = render.find('.full-start-new__rate-line .rate--imdb');
+            const imdbCustom = render.find('.cardify__ratings .rate--imdb');
+            
+            if (imdbStandard.length && imdbCustom.length) {
+                const imdbValue = imdbStandard.find('> div').first().text();
+                const hasHideClass = imdbStandard.hasClass('hide');
+                
+                if (imdbValue && imdbValue !== '0.0' && !hasHideClass) {
+                    imdbCustom.find('.cardify__rating-value').text(imdbValue);
+                    imdbCustom.removeClass('hide');
+                } else if (!hasHideClass && imdbValue) {
+                    imdbCustom.removeClass('hide');
+                }
+            }
+            
+            // KinoPoisk
+            const kpStandard = render.find('.full-start-new__rate-line .rate--kp');
+            const kpCustom = render.find('.cardify__ratings .rate--kp');
+            
+            if (kpStandard.length && kpCustom.length) {
+                const kpValue = kpStandard.find('> div').first().text();
+                const hasHideClass = kpStandard.hasClass('hide');
+                
+                if (kpValue && kpValue !== '0.0' && !hasHideClass) {
+                    kpCustom.find('.cardify__rating-value').text(kpValue);
+                    kpCustom.removeClass('hide');
+                } else if (!hasHideClass && kpValue) {
+                    kpCustom.removeClass('hide');
+                }
+            }
+            
+            // Показываем контейнер если есть хоть один рейтинг
+            const hasVisibleRating = !imdbCustom.hasClass('hide') || !kpCustom.hasClass('hide');
+            if (hasVisibleRating) {
+                render.find('.cardify__ratings').addClass('show');
+            }
+        });
+        
+        // Наблюдаем за изменениями в rate-line
+        const rateLineElement = render.find('.full-start-new__rate-line')[0];
+        if (rateLineElement) {
+            observer.observe(rateLineElement, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['class'],
+                characterData: true
+            });
+            
+            // Первичная синхронизация
+            observer.takeRecords();
+        }
+    }
+
     // Загружаем логотип фильма
     function loadLogo(event) {
         const data = event.data.movie;
@@ -578,6 +699,9 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
         fillMetaInfo(activity, data);
         fillDescription(activity, data);
         fillAdditionalInfo(activity, data);
+        
+        // Синхронизируем рейтинги
+        syncRatings(activity);
 
         // Ждем когда фон загрузится и появится
         waitForBackgroundLoad(activity, () => {
