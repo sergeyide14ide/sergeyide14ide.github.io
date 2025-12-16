@@ -336,9 +336,7 @@
 /* Реакции */
 .cardify .full-start-new__reactions {
     margin: 0;
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: flex-end;
+    position: relative;
 }
 
 .cardify .full-start-new__reactions:not(.focus) {
@@ -363,11 +361,38 @@
 
 /* При фокусе реакции раскрываются вверх */
 .cardify .full-start-new__reactions.focus {
-    gap: 0.5em;
+    display: flex;
+    flex-direction: column;
 }
 
 .cardify .full-start-new__reactions.focus > div {
     display: block;
+}
+
+.cardify .full-start-new__reactions.focus > div:not(:last-child) {
+    position: absolute;
+    right: 0;
+}
+
+/* Позиционируем каждую реакцию выше предыдущей */
+.cardify .full-start-new__reactions.focus > div:nth-last-child(2) {
+    bottom: calc(100% + 0.5em);
+}
+
+.cardify .full-start-new__reactions.focus > div:nth-last-child(3) {
+    bottom: calc(200% + 1em);
+}
+
+.cardify .full-start-new__reactions.focus > div:nth-last-child(4) {
+    bottom: calc(300% + 1.5em);
+}
+
+.cardify .full-start-new__reactions.focus > div:nth-last-child(5) {
+    bottom: calc(400% + 2em);
+}
+
+.cardify .full-start-new__reactions.focus > div:nth-last-child(6) {
+    bottom: calc(500% + 2.5em);
 }
 
 /* Скрываем стандартный rate-line (используется только для статуса) */
