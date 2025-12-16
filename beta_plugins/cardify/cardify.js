@@ -3,7 +3,7 @@
 
     // Главная функция плагина
     function initializePlugin() {
-        console.log('Cardify', 'v2.1.2 - Fixed ratings and vertical reactions');
+        console.log('Cardify', 'v2.2.0 - Added settings for ratings');
         
         if (!Lampa.Platform.screen('tv')) {
             console.log('Cardify', 'TV mode only');
@@ -13,7 +13,117 @@
         patchApiImg();
         addCustomTemplate();
         addStyles();
+        addSettings();
         attachLogoLoader();
+    }
+
+    // Переводы для настроек
+    const translations = {
+        show_ratings: {
+            ru: 'Показывать рейтинги',
+            en: 'Show ratings',
+            uk: 'Показувати рейтинги'
+        },
+        show_ratings_desc: {
+            ru: 'Отображать рейтинги IMDB и КиноПоиск',
+            en: 'Display IMDB and KinoPoisk ratings',
+            uk: 'Відображати рейтинги IMDB та КіноПошук'
+        },
+        ratings_position: {
+            ru: 'Расположение рейтингов',
+            en: 'Ratings position',
+            uk: 'Розташування рейтингів'
+        },
+        ratings_position_desc: {
+            ru: 'Выберите где отображать рейтинги',
+            en: 'Choose where to display ratings',
+            uk: 'Виберіть де відображати рейтинги'
+        },
+        position_after_genres: {
+            ru: 'После жанров',
+            en: 'After genres',
+            uk: 'Після жанрів'
+        },
+        position_with_reactions: {
+            ru: 'Рядом с реакциями',
+            en: 'Near reactions',
+            uk: 'Поруч з реакціями'
+        }
+    };
+
+    function t(key) {
+        const lang = Lampa.Storage.get('language', 'ru');
+        return translations[key] && translations[key][lang] || translations[key].ru;
+    }
+
+    // Добавляем настройки плагина
+    function addSettings() {
+        // Инициализируем значения по умолчанию
+        if (Lampa.Storage.get('cardify_show_ratings') === undefined) {
+            Lampa.Storage.set('cardify_show_ratings', true);
+        }
+        if (Lampa.Storage.get('cardify_ratings_position') === undefined) {
+            Lampa.Storage.set('cardify_ratings_position', 'after_genres');
+        }
+
+        // Создаем раздел настроек
+        Lampa.SettingsApi.addComponent({
+            component: 'cardify_settings',
+            name: 'Cardify',
+            icon: '<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="32" height="32" rx="3" stroke="white" stroke-width="2"/><path d="M10 14L18 18L26 14M18 18V26" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>'
+        });
+
+        // Показывать рейтинги
+        Lampa.SettingsApi.addParam({
+            component: 'cardify_settings',
+            param: {
+                name: 'cardify_show_ratings',
+                type: 'trigger',
+                default: true
+            },
+            field: {
+                name: t('show_ratings'),
+                description: t('show_ratings_desc')
+            },
+            onChange: function(value) {
+                if (value) {
+                    $('body').removeClass('cardify--hide-ratings');
+                } else {
+                    $('body').addClass('cardify--hide-ratings');
+                }
+            }
+        });
+
+        // Расположение рейтингов
+        Lampa.SettingsApi.addParam({
+            component: 'cardify_settings',
+            param: {
+                name: 'cardify_ratings_position',
+                type: 'select',
+                values: {
+                    after_genres: t('position_after_genres'),
+                    with_reactions: t('position_with_reactions')
+                },
+                default: 'after_genres'
+            },
+            field: {
+                name: t('ratings_position'),
+                description: t('ratings_position_desc')
+            },
+            onChange: function(value) {
+                $('body').removeClass('cardify--ratings-after-genres cardify--ratings-with-reactions');
+                $('body').addClass('cardify--ratings-' + value.replace('_', '-'));
+                
+                // Перезагружаем текущую активность для применения изменений
+                Lampa.Activity.active().activity.restart();
+            }
+        });
+
+        // Применяем текущие настройки
+        if (!Lampa.Storage.get('cardify_show_ratings')) {
+            $('body').addClass('cardify--hide-ratings');
+        }
+        $('body').addClass('cardify--ratings-' + Lampa.Storage.get('cardify_ratings_position').replace('_', '-'));
     }
 
     function addCustomTemplate() {
@@ -104,6 +214,22 @@
                 </div>
 
                 <div class="cardify__right">
+                    <!-- Рейтинги рядом с реакциями (альтернативное расположение) -->
+                    <div class="cardify__ratings cardify__ratings--alt">
+                        <div class="rate--imdb hide">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                <path fill="currentColor" d="M4 7c-1.103 0-2 .897-2 2v6.4c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V9c0-1.103-.897-2-2-2H4Zm1.4 2.363h1.275v5.312H5.4V9.362Zm1.962 0H9l.438 2.512.287-2.512h1.75v5.312H10.4v-3l-.563 3h-.8l-.512-3v3H7.362V9.362Zm8.313 0H17v1.2c.16-.16.516-.363.875-.363.36.04.84.283.8.763v3.075c0 .24-.075.404-.275.524-.16.04-.28.075-.6.075-.32 0-.795-.196-.875-.237-.08-.04-.163.275-.163.275h-1.087V9.362Zm-3.513.037H13.6c.88 0 1.084.078 1.325.237.24.16.35.397.35.838v3.2c0 .32-.15.563-.35.762-.2.2-.484.288-1.325.288h-1.438V9.4Zm1.275.8v3.563c.2 0 .488.04.488-.2v-3.126c0-.28-.247-.237-.488-.237Zm3.763.675c-.12 0-.2.08-.2.2v2.688c0 .159.08.237.2.237.12 0 .2-.117.2-.238l-.037-2.687c0-.12-.043-.2-.163-.2Z"/>
+                            </svg>
+                            <div>0.0</div>
+                        </div>
+                        <div class="rate--kp hide">
+                            <svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                <path d="M96.5 20 66.1 75.733V20H40.767v152H66.1v-55.733L96.5 172h35.467C116.767 153.422 95.2 133.578 80 115c28.711 16.889 63.789 35.044 92.5 51.933v-30.4C148.856 126.4 108.644 115.133 85 105c23.644 3.378 63.856 7.889 87.5 11.267v-30.4L85 90c27.022-11.822 60.478-22.711 87.5-34.533v-30.4C143.789 41.956 108.711 63.11 80 80l51.967-60z" style="fill:none;stroke:currentColor;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10"/>
+                            </svg>
+                            <div>0.0</div>
+                        </div>
+                    </div>
+                    
                     <div class="full-start-new__reactions selector">
                         <div>#{reactions_none}</div>
                     </div>
@@ -243,21 +369,11 @@
     vertical-align: middle;
 }
 
-/* Рейтинги */
+/* Рейтинги - базовые стили */
 .cardify__ratings {
     display: flex;
     align-items: center;
     gap: 0.8em;
-    margin-bottom: 0.8em;
-    opacity: 0;
-    transform: translateY(15px);
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-    transition-delay: 0.08s;
-}
-
-.cardify__ratings.show {
-    opacity: 1;
-    transform: translateY(0);
 }
 
 .cardify__ratings .rate--imdb,
@@ -279,6 +395,57 @@
     font-weight: 600;
     line-height: 1;
     color: #fff;
+}
+
+/* Рейтинги после жанров (основное расположение) */
+.cardify__left .cardify__ratings {
+    margin-bottom: 0.8em;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    transition-delay: 0.08s;
+}
+
+.cardify__left .cardify__ratings.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Рейтинги рядом с реакциями (альтернативное расположение) */
+.cardify__ratings--alt {
+    margin: 0;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    transition-delay: 0.15s;
+}
+
+.cardify__ratings--alt.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Управление видимостью через настройки */
+body.cardify--hide-ratings .cardify__ratings {
+    display: none !important;
+}
+
+/* Расположение "После жанров" - показываем основные, скрываем альтернативные */
+body.cardify--ratings-after-genres .cardify__left .cardify__ratings {
+    display: flex;
+}
+
+body.cardify--ratings-after-genres .cardify__ratings--alt {
+    display: none;
+}
+
+/* Расположение "Рядом с реакциями" - скрываем основные, показываем альтернативные */
+body.cardify--ratings-with-reactions .cardify__left .cardify__ratings {
+    display: none;
+}
+
+body.cardify--ratings-with-reactions .cardify__ratings--alt {
+    display: flex;
 }
 
 /* Описание */
@@ -328,9 +495,12 @@
 
 .cardify__right {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
     flex-shrink: 0;
     position: relative;
+    gap: 1em;
 }
 
 /* Реакции */
@@ -679,7 +849,14 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
             activity.render().find('.cardify__meta').addClass('show');
             activity.render().find('.cardify__description').addClass('show');
             activity.render().find('.cardify__info').addClass('show');
-            activity.render().find('.cardify__ratings').addClass('show');
+            
+            // Показываем рейтинги в зависимости от настройки
+            const ratingsPosition = Lampa.Storage.get('cardify_ratings_position', 'after_genres');
+            if (ratingsPosition === 'after_genres') {
+                activity.render().find('.cardify__left .cardify__ratings').addClass('show');
+            } else {
+                activity.render().find('.cardify__ratings--alt').addClass('show');
+            }
         });
 
         // Загружаем логотип
