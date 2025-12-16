@@ -344,7 +344,7 @@ body.advanced--animation:not(.no--animation) .full-start__background.loaded {
 }
 
 /* Скрываем rate-line */
-.cardify .full-start-new__rate-line {
+.cardify .full-start__status {
     visibility: hidden;
     width: 1px;
 }
